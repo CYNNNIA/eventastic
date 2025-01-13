@@ -1,0 +1,96 @@
+/* Contenedor Principal */
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #eaf7f0, #dbe2ef);
+}
+
+/* Formulario */
+.login-form {
+  background: #ffffff;
+  padding: 30px 40px;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+}
+
+.login-form h1 {
+  font-size: 2rem;
+  color: #3f72af;
+  margin-bottom: 20px;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Inputs */
+.login-form input {
+  width: 100%;
+  padding: 10px 15px;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+.login-form input:focus {
+  outline: none;
+  border-color: #38b6ff;
+}
+
+/* Botón de Iniciar Sesión */
+.login-form button {
+  width: 100%;
+  padding: 10px 15px;
+  background: linear-gradient(135deg, #48c6ef, #6f86d6);
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-form button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Enlace de Registro */
+.login-form p {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: #112d4e;
+}
+
+.login-form a {
+  color: #38b6ff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.login-form a:hover {
+  text-decoration: underline;
+}
+
+/* Adaptación para móviles */
+@media (max-width: 768px) {
+  .login-form {
+    padding: 20px 30px;
+  }
+
+  .login-form h1 {
+    font-size: 1.8rem;
+  }
+
+  .login-form input,
+  .login-form button {
+    font-size: 0.9rem;
+  }
+}

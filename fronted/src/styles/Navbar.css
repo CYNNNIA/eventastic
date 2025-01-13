@@ -1,0 +1,149 @@
+/* Logo */
+.navbar-logo {
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #ff416c, #ff4b2b, #12c2e9);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientAnimation 5s infinite linear;
+  text-decoration: none;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
+}
+
+/* Animación del Gradiente del Logo */
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Botón Hamburguesa */
+.navbar-toggle {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+  justify-content: center;
+  align-items: center;
+  width: 40px; /* Tamaño del botón */
+  height: 40px;
+  background-color: transparent;
+  border: none;
+  position: absolute;
+  right: 15px;
+  top: 15px;
+}
+
+.navbar-toggle span {
+  background: #fff;
+  height: 3px;
+  width: 25px;
+  margin: 3px 0;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+/* Links de la Navbar */
+.navbar-links {
+  display: flex;
+  gap: 15px;
+}
+
+.navbar-links.active {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 70px;
+  right: 10px;
+  background: linear-gradient(135deg, #48c6ef, #6f86d6);
+  border-radius: 10px;
+  padding: 15px;
+  width: 80%;
+  z-index: 999;
+}
+
+/* Tablas */
+.navbar-tab {
+  color: #fff;
+  text-decoration: none;
+  font-size: 1.2rem;
+  padding: 10px 30px;
+  border-radius: 15px;
+  background: linear-gradient(135deg, #3f72af, #112d4e);
+  position: relative;
+  transition: all 0.3s ease;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.navbar-tab:hover {
+  transform: scale(1.05);
+}
+
+.navbar-tab::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  width: calc(100% + 10px);
+  height: calc(100% + 10px);
+  background: linear-gradient(135deg, #f64f59, #c471ed, #12c2e9);
+  border-radius: 15px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+}
+
+.navbar-tab:hover::before {
+  opacity: 1;
+}
+
+/* Botón Cerrar Sesión */
+.logout-btn {
+  background: linear-gradient(135deg, #d32f2f, #b71c1c);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 15px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  background: linear-gradient(135deg, #b71c1c, #d32f2f);
+  transform: translateY(-3px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .navbar-toggle {
+    display: flex;
+  }
+
+  .navbar-links {
+    display: none;
+  }
+
+  .navbar-links.active {
+    display: flex;
+  }
+
+  .navbar-tab {
+    font-size: 1rem;
+    padding: 10px 20px;
+  }
+
+  .logout-btn {
+    margin-top: 10px;
+    padding: 8px 15px;
+    font-size: 0.9rem;
+  }
+}

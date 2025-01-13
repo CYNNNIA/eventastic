@@ -1,0 +1,103 @@
+.create-event-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 79vh;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(to bottom, #f0f4f8, #dbe2ef);
+  font-family: 'Poppins', sans-serif;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+body,
+html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* Contenedor principal */
+.create-event-container {
+  background: #fff;
+  border-radius: 15px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  padding: 30px;
+  width: 90%;
+  max-width: 900px;
+  box-sizing: border-box;
+  text-align: center;
+  animation: fadeIn 0.8s ease-in-out;
+  overflow: hidden;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Título */
+.create-event-title {
+  color: #3f72af;
+  font-size: 2.5rem;
+  margin-bottom: 15px;
+}
+
+/* Formulario */
+.create-event-form input,
+.create-event-form textarea,
+.create-event-form button {
+  width: 100%;
+  margin-bottom: 15px;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.create-event-form button {
+  background: #3f72af;
+  color: white;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.create-event-form button:hover {
+  background: #112d4e;
+  transform: scale(1.05);
+}
+
+/* Información adicional */
+.event-info {
+  font-size: 0.8rem;
+  color: #555;
+  text-align: left;
+  margin-top: 10px;
+}
+
+.event-info h3 {
+  font-size: 1rem;
+  margin-bottom: 5px;
+  color: #3f72af;
+}
+
+.event-info ul {
+  list-style: disc;
+  margin-left: 20px;
+  padding-left: 0;
+}
+
+.event-info li {
+  margin-bottom: 5px;
+}

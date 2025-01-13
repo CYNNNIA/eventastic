@@ -1,0 +1,81 @@
+.register-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 50px auto;
+  background-color: #ffffff;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  box-sizing: border-box;
+}
+
+h1 {
+  margin-bottom: 30px;
+  color: #112d4e;
+  font-size: 2.2rem;
+  font-weight: bold;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #cccccc;
+  border-radius: 6px;
+  font-size: 16px;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+input:focus {
+  border-color: #3f72af;
+  outline: none;
+  box-shadow: 0 0 5px rgba(63, 114, 175, 0.5);
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  background-color: #38b6ff;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #2a9df4;
+}
+
+.error-message {
+  color: red;
+  margin-top: 10px;
+  font-size: 0.9rem;
+}
+
+/* Ajustes para dispositivos móviles */
+@media (max-width: 768px) {
+  .register-container {
+    max-width: 90%;
+    padding: 20px;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+  }
+
+  button {
+    font-size: 16px;
+  }
+
+  input {
+    font-size: 15px;
+  }
+}
