@@ -17,7 +17,7 @@ connectDB()
 // Middleware para CORS
 app.use(
   cors({
-    origin: ['http://localhost:5173'], // Cambiado para que coincida con Vite
+    origin: ['http://localhost:3000'], // Asegúrate de que sea el puerto correcto
     credentials: true // Permite el uso de cookies y cabeceras en las solicitudes
   })
 )

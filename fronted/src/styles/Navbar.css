@@ -53,9 +53,14 @@
 /* Links de la Navbar */
 .navbar-links {
   display: flex;
-  gap: 15px;
+  gap: 20px; /* Espaciado entre los enlaces */
+  justify-content: center; /* Centra los enlaces */
+  align-items: center; /* Alinea verticalmente los enlaces */
+  margin-left: auto; /* Alinea los enlaces a la derecha */
+  flex-grow: 1; /* Asegura que los enlaces ocupen el espacio disponible */
 }
 
+/* Navbar Links (cuando el menú hamburguesa está activado en pantallas pequeñas) */
 .navbar-links.active {
   display: flex;
   flex-direction: column;
@@ -130,6 +135,10 @@
 
   .navbar-links {
     display: none;
+    width: 100%;
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
   }
 
   .navbar-links.active {
