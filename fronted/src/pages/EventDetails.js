@@ -50,7 +50,7 @@ const EventDetails = () => {
 
   return (
     <div className='event-details-page'>
-      <div className='event-details-container'>
+      <div className='event-details-container-more'>
         <h1>{event.title}</h1>
         <img
           src={`http://localhost:5001${event.image}`}
@@ -66,7 +66,7 @@ const EventDetails = () => {
         <p>
           <strong>Ubicación:</strong> {event.location}
         </p>
-        <div className='event-details-buttons'>
+        <div className='event-details-buttons-more'>
           <button className='join-event-button' onClick={handleJoinEvent}>
             Unirse al Evento
           </button>

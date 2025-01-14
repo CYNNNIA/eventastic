@@ -50,9 +50,15 @@ const Navbar = () => {
         <span className='navbar-tab' onClick={handleProfileClick}>
           Mi Perfil
         </span>
-        <button className='logout-btn' onClick={handleLogout}>
-          Cerrar Sesión
-        </button>
+        {localStorage.getItem('token') ? (
+          <button className='logout-btn' onClick={handleLogout}>
+            Cerrar Sesión
+          </button>
+        ) : (
+          <Link to='/login' className='navbar-tab' onClick={closeMenu}>
+            Iniciar Sesión
+          </Link>
+        )}
       </div>
     </nav>
   )

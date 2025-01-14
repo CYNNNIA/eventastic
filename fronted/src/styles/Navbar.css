@@ -1,3 +1,16 @@
+/* Navbar principal */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #48c6ef; /* Cambia el color de la barra si es necesario */
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
 /* Logo */
 .navbar-logo {
   font-size: 2.5rem;
@@ -10,6 +23,7 @@
   animation: gradientAnimation 5s infinite linear;
   text-decoration: none;
   text-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
+  margin-left: 10px;
 }
 
 /* Animación del Gradiente del Logo */
@@ -25,67 +39,52 @@
   }
 }
 
-/* Botón Hamburguesa */
+/* Botón de hamburguesa */
 .navbar-toggle {
-  display: none;
+  display: none; /* Ocultar por defecto */
   flex-direction: column;
   cursor: pointer;
   justify-content: center;
   align-items: center;
-  width: 40px; /* Tamaño del botón */
+  width: 40px;
   height: 40px;
   background-color: transparent;
   border: none;
   position: absolute;
-  right: 15px;
+  right: 55px;
   top: 15px;
 }
 
 .navbar-toggle span {
-  background: #fff;
-  height: 3px;
+  background-color: #fff; /* Asegúrate de que los spans sean visibles */
+  height: 4px;
   width: 25px;
-  margin: 3px 0;
+  margin: 5px 0;
   border-radius: 10px;
   transition: all 0.3s ease;
 }
 
-/* Links de la Navbar */
+/* Contenedor de enlaces de navegación */
 .navbar-links {
   display: flex;
-  gap: 20px; /* Espaciado entre los enlaces */
-  justify-content: center; /* Centra los enlaces */
-  align-items: center; /* Alinea verticalmente los enlaces */
-  margin-left: auto; /* Alinea los enlaces a la derecha */
-  flex-grow: 1; /* Asegura que los enlaces ocupen el espacio disponible */
+  gap: 15px;
+  justify-content: space-between;
+  align-items: center;
+  margin-right: 10px;
 }
 
-/* Navbar Links (cuando el menú hamburguesa está activado en pantallas pequeñas) */
-.navbar-links.active {
-  display: flex;
-  flex-direction: column;
-  position: absolute;
-  top: 70px;
-  right: 10px;
-  background: linear-gradient(135deg, #48c6ef, #6f86d6);
-  border-radius: 10px;
-  padding: 15px;
-  width: 80%;
-  z-index: 999;
-}
-
-/* Tablas */
+/* Links de la Navbar */
 .navbar-tab {
   color: #fff;
   text-decoration: none;
   font-size: 1.2rem;
-  padding: 10px 30px;
+  padding: 6px 15px;
   border-radius: 15px;
   background: linear-gradient(135deg, #3f72af, #112d4e);
   position: relative;
   transition: all 0.3s ease;
   text-align: center;
-  white-space: nowrap;
+  margin-right: 12px;
 }
 
 .navbar-tab:hover {
@@ -110,16 +109,19 @@
   opacity: 1;
 }
 
-/* Botón Cerrar Sesión */
+/* Botón de Cerrar Sesión */
 .logout-btn {
   background: linear-gradient(135deg, #d32f2f, #b71c1c);
   color: #fff;
   border: none;
-  border-radius: 10px;
-  padding: 8px 15px;
-  font-size: 1rem;
+  border-radius: 5px;
+  padding: 5px 15px;
+  font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.3s ease;
+  max-width: 120px; /* Limitar el ancho */
+  white-space: nowrap; /* Evitar que el texto se rompa */
+  margin-right: 30px;
 }
 
 .logout-btn:hover {
@@ -127,32 +129,43 @@
   transform: translateY(-3px);
 }
 
-/* Responsive */
-@media (max-width: 768px) {
+/* Para las versiones móviles */
+@media (max-width: 968px) {
+  /* Mostrar el botón hamburguesa */
   .navbar-toggle {
-    display: flex;
+    display: flex; /* Hacer visible el botón hamburguesa */
   }
 
+  /* Menu en versión móvil */
   .navbar-links {
-    display: none;
-    width: 100%;
     flex-direction: column;
-    text-align: center;
-    gap: 15px;
+    gap: 10px;
+    position: absolute;
+    top: 70px;
+    right: 10px;
+    background: #89c5e8a3;
+    padding: 10px;
+    border-radius: 30px;
+    width: 40%;
+    display: none; /* Ocultar el menú por defecto */
   }
 
+  /* Mostrar el menú cuando esté activo */
   .navbar-links.active {
     display: flex;
   }
 
-  .navbar-tab {
-    font-size: 1rem;
-    padding: 10px 20px;
+  /* Estilo de los botones en la navbar para móviles */
+  .navbar-tab,
+  .logout-btn {
+    font-size: 0.8rem;
+    padding: 10px 25px;
+    width: 50%; /* Hacer los botones más grandes en pantallas pequeñas */
   }
 
+  /* Ajustar el botón de cerrar sesión para dispositivos móviles */
   .logout-btn {
-    margin-top: 10px;
-    padding: 8px 15px;
-    font-size: 0.9rem;
+    font-size: 0.6rem;
+    max-width: none; /* Quitar el límite de ancho en pantallas móviles */
   }
 }

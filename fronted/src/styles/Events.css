@@ -50,7 +50,7 @@ main {
 
 /* Contenedor principal */
 .events-container {
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 20px;
   text-align: center;
@@ -144,18 +144,18 @@ main {
 /* Imagen */
 .event-image {
   width: 100%;
-  height: 200px;
+  height: 300px;
   object-fit: cover;
 }
 
 /* Contenido */
 .event-content {
-  padding: 20px;
+  padding: 0px;
 }
 
 .event-content h3 {
   font-size: 1.8rem;
-  margin-bottom: 10px;
+  color: red;
 }
 
 .event-content p {

@@ -20,6 +20,20 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+
+    // Validación de correo electrónico
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
+    if (!email.match(emailRegex)) {
+      setError('Por favor, ingresa un correo electrónico válido.')
+      return
+    }
+
+    // Validación de la contraseña
+    if (password.length < 6) {
+      setError('La contraseña debe tener al menos 6 caracteres.')
+      return
+    }
+
     try {
       const { data } = await axios.post(
         'http://localhost:5001/api/auth/login',
