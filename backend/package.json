@@ -7,7 +7,7 @@
     "start": "node backend/index.js",
     "dev": "nodemon backend/index.js",
     "test": "NODE_ENV=test jest",
-    "build": "react-scripts build"
+    "start": "node backend/index.js"
   },
   "repository": {
     "type": "git",
