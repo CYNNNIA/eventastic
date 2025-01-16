@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import '../styles/Register.css'
+import '../styles/spinner.css' // Asegúrate de importar el archivo spinner.css
 
 const Register = () => {
   const [name, setName] = useState('')
@@ -9,39 +10,16 @@ const Register = () => {
   const [password, setPassword] = useState('')
   const [avatar, setAvatar] = useState(null)
   const [error, setError] = useState(null)
+  const [loading, setLoading] = useState(false) // Estado para el spinner
   const navigate = useNavigate()
 
-  // Manejar el cambio del avatar
   const handleFileChange = (e) => {
     setAvatar(e.target.files[0])
   }
 
-  // Manejar la sumisión del formulario
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    setError('')
-
-    // Validación de correo electrónico
-    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
-    if (!email.match(emailRegex)) {
-      setError('Por favor, ingresa un correo electrónico válido.')
-      return
-    }
-
-    // Validación de la contraseña (mínimo 6 caracteres)
-    if (password.length < 6) {
-      setError('La contraseña debe tener al menos 6 caracteres.')
-      return
-    }
-
-    // Validación de campos vacíos
-    if (!name || !email || !password) {
-      setError('Por favor, completa todos los campos.')
-      return
-    }
-
-    // Crear el FormData para enviar los datos al backend
     const formData = new FormData()
     formData.append('name', name)
     formData.append('email', email)
@@ -50,8 +28,9 @@ const Register = () => {
       formData.append('avatar', avatar)
     }
 
+    setLoading(true) // Mostrar el spinner cuando se envía el formulario
+
     try {
-      // Realizar la solicitud POST al backend para registrar el usuario
       const { data } = await axios.post(
         'http://localhost:5001/api/auth/register',
         formData,
@@ -62,17 +41,17 @@ const Register = () => {
         }
       )
 
-      // Guardar el token en el almacenamiento local y redirigir al usuario
       localStorage.setItem('token', data.token)
       alert('Registro exitoso')
       navigate('/events') // Redirige al usuario a la página de eventos
     } catch (err) {
-      // Manejo de errores de registro (por ejemplo, si el correo ya está registrado)
-      if (err.response?.data?.msg === 'El usuario ya existe') {
-        setError('Este correo electrónico ya está registrado.')
-      } else {
-        setError('Error al registrarse. Inténtalo de nuevo.')
-      }
+      console.error(err.response?.data || err.message)
+      setError(
+        err.response?.data?.message ||
+          'Error al registrarse. Inténtalo de nuevo.'
+      )
+    } finally {
+      setLoading(false) // Ocultar el spinner después de la respuesta
     }
   }
 
@@ -116,7 +95,13 @@ const Register = () => {
             onChange={handleFileChange}
           />
         </div>
-        <button type='submit'>Registrarse</button>
+        <button type='submit'>
+          {loading ? (
+            <div className='spinner'></div> // Mostrar el spinner si está cargando
+          ) : (
+            'Registrarse'
+          )}
+        </button>
         {error && <p className='error-message'>{error}</p>}
       </form>
     </div>

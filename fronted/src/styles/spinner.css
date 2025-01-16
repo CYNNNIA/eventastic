@@ -1,0 +1,54 @@
+/* spinner.css */
+
+/* Estilo del spinner */
+.spinner {
+  border: 5px solid transparent; /* Hacer el borde más delgado */
+  border-top: 5px solid #38b6ff; /* Color del spinner que combine con tu tema */
+  border-radius: 50%;
+  width: 40px; /* Tamaño del spinner reducido */
+  height: 40px; /* Tamaño del spinner reducido */
+  animation: spin 1.5s linear infinite;
+  margin: 0 auto;
+  position: relative;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2), 0 0 15px rgba(0, 0, 0, 0.1); /* Sombra más sutil */
+}
+
+/* Animación de giro */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Efecto de brillo (opcional) */
+.spinner::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16px; /* Tamaño del círculo interno reducido */
+  height: 16px; /* Tamaño del círculo interno reducido */
+  background: #38b6ff;
+  border-radius: 50%;
+  animation: pulse 1.5s ease-in-out infinite;
+  transform: translate(-50%, -50%);
+}
+
+/* Animación de pulso del centro del spinner */
+@keyframes pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0.6;
+  }
+}

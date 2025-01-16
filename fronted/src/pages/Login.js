@@ -1,55 +1,44 @@
-import React, { useEffect, useState } from 'react'
-import axios from 'axios'
-import { useNavigate } from 'react-router-dom'
-import '../styles/Login.css'
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import '../styles/Login.css';
+import '../styles/spinner.css';  // Asegúrate de importar el archivo spinner.css
 
 const Login = () => {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const navigate = useNavigate()
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);  // Estado para el spinner
+  const navigate = useNavigate();
 
   // Verifica si el usuario ya está autenticado al cargar la página
   useEffect(() => {
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem('token');
     if (token) {
-      navigate('/events')
+      navigate('/events');
     }
-  }, [navigate])
+  }, [navigate]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError('')
-
-    // Validación de correo electrónico
-    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
-    if (!email.match(emailRegex)) {
-      setError('Por favor, ingresa un correo electrónico válido.')
-      return
-    }
-
-    // Validación de la contraseña
-    if (password.length < 6) {
-      setError('La contraseña debe tener al menos 6 caracteres.')
-      return
-    }
+    e.preventDefault();
+    setError('');
+    setLoading(true);  // Mostrar el spinner cuando se envía el formulario
 
     try {
       const { data } = await axios.post(
         'http://localhost:5001/api/auth/login',
-        {
-          email,
-          password
-        }
-      )
+        { email, password }
+      );
 
-      localStorage.setItem('token', data.token)
-      navigate('/events') // Redirige al usuario a la página de eventos
+      localStorage.setItem('token', data.token);
+      navigate('/events'); // Redirige al usuario a la página de eventos
     } catch (error) {
-      console.error('Error al iniciar sesión:', error)
-      setError('Credenciales incorrectas. Por favor, inténtalo de nuevo.')
+      console.error('Error al iniciar sesión:', error);
+      setError('Credenciales incorrectas. Por favor, inténtalo de nuevo.');
+    } finally {
+      setLoading(false);  // Ocultar el spinner después de la respuesta
     }
-  }
+  };
 
   return (
     <div className='login-container'>
@@ -73,14 +62,18 @@ const Login = () => {
         />
         {error && <p className='login-error'>{error}</p>}
         <button type='submit' className='login-button'>
-          Iniciar sesión
+          {loading ? (
+            <div className="spinner"></div>  // Mostrar el spinner si está cargando
+          ) : (
+            'Iniciar sesión'
+          )}
         </button>
       </form>
       <p className='login-footer'>
         ¿No tienes cuenta? <a href='/register'>Regístrate</a>
       </p>
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;
