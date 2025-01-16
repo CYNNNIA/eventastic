@@ -1,7 +1,7 @@
 {
-  "name": "eventastic",
+  "name": "eventastic-backend",
   "version": "1.0.0",
-  "description": "Proyecto Eventastic con backend y frontend",
+  "description": "Backend para el proyecto Eventastic",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
