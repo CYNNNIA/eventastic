@@ -1,5 +1,6 @@
 {
-  "devDependencies": {
-    "nodemon": "^3.1.9"
+  "scripts": {
+    "start": "cd backend && npm run start",
+    "dev": "cd backend && npm run dev"
   }
 }
