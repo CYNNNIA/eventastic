@@ -11,8 +11,12 @@
   ],
   "routes": [
     {
+      "src": "/register",
+      "dest": "/index.html"
+    },
+    {
       "src": "/(.*)",
-      "dest": "/frontend/$1"
+      "dest": "/index.html"
     }
   ]
 }
