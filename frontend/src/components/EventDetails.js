@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import axiosInstance from '../api/axiosInstance' // Asegúrate de que esta ruta sea correcta
+import axiosInstance from '../api/axiosInstance' 
 
 const EventDetails = () => {
   const { id } = useParams()

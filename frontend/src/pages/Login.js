@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Login.css';
-import '../styles/spinner.css';  // Asegúrate de importar el archivo spinner.css
+import '../styles/spinner.css';
 
 const Login = () => {
   const [email, setEmail] = useState('');

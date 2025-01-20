@@ -4,7 +4,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 10px 20px;
-  background-color: #48c6ef; /* Cambia el color de la barra si es necesario */
+  background-color: #48c6ef;
   position: fixed;
   top: 0;
   width: 100%;
@@ -41,7 +41,7 @@
 
 /* Botón de hamburguesa */
 .navbar-toggle {
-  display: none; /* Ocultar por defecto */
+  display: none; 
   flex-direction: column;
   cursor: pointer;
   justify-content: center;
@@ -56,7 +56,7 @@
 }
 
 .navbar-toggle span {
-  background-color: #fff; /* Asegúrate de que los spans sean visibles */
+  background-color: #fff; 
   height: 4px;
   width: 25px;
   margin: 5px 0;
@@ -119,8 +119,8 @@
   font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  max-width: 120px; /* Limitar el ancho */
-  white-space: nowrap; /* Evitar que el texto se rompa */
+  max-width: 120px; 
+  white-space: nowrap; 
   margin-right: 30px;
 }
 
@@ -131,9 +131,9 @@
 
 /* Para las versiones móviles */
 @media (max-width: 968px) {
-  /* Mostrar el botón hamburguesa */
+  
   .navbar-toggle {
-    display: flex; /* Hacer visible el botón hamburguesa */
+    display: flex; 
   }
 
   /* Menu en versión móvil */
@@ -147,7 +147,7 @@
     padding: 10px;
     border-radius: 30px;
     width: 40%;
-    display: none; /* Ocultar el menú por defecto */
+    display: none; 
   }
 
   /* Mostrar el menú cuando esté activo */
@@ -160,12 +160,12 @@
   .logout-btn {
     font-size: 0.8rem;
     padding: 10px 25px;
-    width: 50%; /* Hacer los botones más grandes en pantallas pequeñas */
+    width: 50%; 
   }
 
   /* Ajustar el botón de cerrar sesión para dispositivos móviles */
   .logout-btn {
     font-size: 0.6rem;
-    max-width: none; /* Quitar el límite de ancho en pantallas móviles */
+    max-width: none; 
   }
 }

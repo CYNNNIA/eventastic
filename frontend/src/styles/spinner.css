@@ -2,15 +2,15 @@
 
 /* Estilo del spinner */
 .spinner {
-  border: 5px solid transparent; /* Hacer el borde más delgado */
-  border-top: 5px solid #38b6ff; /* Color del spinner que combine con tu tema */
+  border: 5px solid transparent; 
+  border-top: 5px solid #38b6ff; 
   border-radius: 50%;
-  width: 40px; /* Tamaño del spinner reducido */
-  height: 40px; /* Tamaño del spinner reducido */
+  width: 40px; 
+  height: 40px;
   animation: spin 1.5s linear infinite;
   margin: 0 auto;
   position: relative;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2), 0 0 15px rgba(0, 0, 0, 0.1); /* Sombra más sutil */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2), 0 0 15px rgba(0, 0, 0, 0.1); 
 }
 
 /* Animación de giro */
@@ -29,8 +29,8 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 16px; /* Tamaño del círculo interno reducido */
-  height: 16px; /* Tamaño del círculo interno reducido */
+  width: 16px; 
+  height: 16px; 
   background: #38b6ff;
   border-radius: 50%;
   animation: pulse 1.5s ease-in-out infinite;

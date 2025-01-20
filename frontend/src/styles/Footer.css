@@ -3,7 +3,7 @@ footer {
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 80px; /* Altura del footer */
+  height: 80px; 
   background: linear-gradient(135deg, #38b6ff, #32a852);
   color: white;
   text-align: center;
@@ -11,7 +11,7 @@ footer {
   align-items: center;
   justify-content: space-around;
   box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
-  z-index: 10; /* Asegurarse de que esté por encima */
+  z-index: 10; 
 }
 
 /* Contenedor Principal */

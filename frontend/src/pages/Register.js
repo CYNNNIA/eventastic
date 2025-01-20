@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import '../styles/Register.css'
-import '../styles/spinner.css' // Asegúrate de importar el archivo spinner.css
+import '../styles/spinner.css'
 
 const Register = () => {
   const [name, setName] = useState('')

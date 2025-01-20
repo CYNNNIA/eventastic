@@ -113,7 +113,7 @@
 /* Adaptación para dispositivos más pequeños */
 @media (max-width: 768px) {
   .event-card {
-    flex: 1 1 100%; /* Las tarjetas ocupan el 100% del ancho en pantallas pequeñas */
+    flex: 1 1 100%; 
   }
 
   .profile-container {
