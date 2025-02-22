@@ -1,35 +1,57 @@
-import axios from 'axios'
+import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 
-// Crear una instancia de Axios con la URL base
 const axiosInstance = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5001/api' // Cambia según tu entorno
-})
+  baseURL: 'http://localhost:5001/api', // Ajusta si es necesario
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
-// Interceptor para agregar el token de autorización a cada solicitud
+// Interceptor para manejar el token y errores globales
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem('token');
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`
+      try {
+        const decoded = jwtDecode(token);
+        const currentTime = Date.now() / 1000;
+
+        // Si el token está expirado
+        if (decoded.exp < currentTime) {
+          localStorage.removeItem('token');
+          window.location.href = '/login';
+          alert('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
+          return Promise.reject('Token expirado');
+        }
+
+        config.headers.Authorization = `Bearer ${token}`;
+      } catch (error) {
+        // Si el token es inválido o corrupto
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+        alert('Token inválido. Por favor, inicia sesión nuevamente.');
+        return Promise.reject('Token inválido');
+      }
     }
-    return config
+    return config;
   },
   (error) => {
-    return Promise.reject(error)
+    return Promise.reject(error);
   }
-)
+);
 
-// Interceptor para manejar errores globales (opcional)
+// Manejo de errores globales (opcional)
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      // Si el token ha expirado o no es válido, redirige al login
-      localStorage.removeItem('token')
-      window.location.href = '/login'
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+      alert('No autorizado. Por favor, inicia sesión nuevamente.');
     }
-    return Promise.reject(error)
+    return Promise.reject(error);
   }
-)
+);
 
-export default axiosInstance
+export default axiosInstance;

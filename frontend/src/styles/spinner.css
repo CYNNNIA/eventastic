@@ -1,11 +1,9 @@
-/* spinner.css */
-
-/* Estilo del spinner */
+/* Spinner principal */
 .spinner {
-  border: 5px solid transparent; 
-  border-top: 5px solid #38b6ff; 
+  border: 5px solid transparent;
+  border-top: 5px solid #38b6ff; /* Color principal */
   border-radius: 50%;
-  width: 40px; 
+  width: 40px;
   height: 40px;
   animation: spin 1.5s linear infinite;
   margin: 0 auto;
@@ -23,21 +21,21 @@
   }
 }
 
-/* Efecto de brillo (opcional) */
+/* Efecto de brillo en el centro */
 .spinner::after {
   content: '';
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 16px; 
-  height: 16px; 
+  width: 16px;
+  height: 16px;
   background: #38b6ff;
   border-radius: 50%;
   animation: pulse 1.5s ease-in-out infinite;
   transform: translate(-50%, -50%);
 }
 
-/* Animación de pulso del centro del spinner */
+/* Animación de pulso */
 @keyframes pulse {
   0% {
     transform: translate(-50%, -50%) scale(0.8);
@@ -51,4 +49,14 @@
     transform: translate(-50%, -50%) scale(0.8);
     opacity: 0.6;
   }
+}
+
+/* Opcional: Centrar completamente el spinner en pantalla */
+.spinner.centered {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  margin: 0;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
 }

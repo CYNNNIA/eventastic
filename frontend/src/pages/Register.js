@@ -46,10 +46,13 @@ const Register = () => {
       navigate('/events') // Redirige al usuario a la página de eventos
     } catch (err) {
       console.error(err.response?.data || err.message)
-      setError(
-        err.response?.data?.message ||
-          'Error al registrarse. Inténtalo de nuevo.'
-      )
+      const backendMessage = err.response?.data?.message
+
+      if (backendMessage === 'Email already registered') {
+        setError('El correo electrónico ya está registrado. Intenta con otro.')
+      } else {
+        setError(backendMessage || 'Error al registrarse. Inténtalo de nuevo.')
+      }
     } finally {
       setLoading(false) // Ocultar el spinner después de la respuesta
     }

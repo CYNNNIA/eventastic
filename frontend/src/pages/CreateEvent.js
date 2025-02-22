@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import axiosInstance from '../api/axiosInstance'
 import { useNavigate } from 'react-router-dom'
 import '../styles/CreateEvent.css'
+import '../styles/spinner.css' // Importamos estilos del spinner
 
 const CreateEvent = () => {
   const [title, setTitle] = useState('')
@@ -9,6 +10,7 @@ const CreateEvent = () => {
   const [date, setDate] = useState('')
   const [location, setLocation] = useState('')
   const [image, setImage] = useState(null)
+  const [loading, setLoading] = useState(false) // Estado de carga
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
@@ -21,11 +23,11 @@ const CreateEvent = () => {
     formData.append('location', location)
     if (image) formData.append('image', image)
 
+    setLoading(true) // Mostrar spinner al enviar
+
     try {
       await axiosInstance.post('/events', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+        headers: { 'Content-Type': 'multipart/form-data' }
       })
 
       alert('Evento creado con éxito.')
@@ -33,6 +35,8 @@ const CreateEvent = () => {
     } catch (error) {
       console.error('Error al crear el evento:', error)
       alert('Error al crear el evento. Inténtalo de nuevo.')
+    } finally {
+      setLoading(false) // Ocultar spinner al finalizar
     }
   }
 
@@ -40,6 +44,7 @@ const CreateEvent = () => {
     <div className='create-event-page'>
       <div className='create-event-container'>
         <h1 className='create-event-title'>Crear Evento</h1>
+
         <form className='create-event-form' onSubmit={handleSubmit}>
           <input
             type='text'
@@ -73,10 +78,16 @@ const CreateEvent = () => {
             accept='image/*'
             onChange={(e) => setImage(e.target.files[0])}
           />
-          <button type='submit' className='create-event-button'>
-            Crear Evento
+
+          <button
+            type='submit'
+            className='create-event-button'
+            disabled={loading}
+          >
+            {loading ? <div className='spinner'></div> : 'Crear Evento'}
           </button>
         </form>
+
         <div className='event-info'>
           <h3>Condiciones para Crear un Evento</h3>
           <ul>

@@ -18,7 +18,7 @@ const register = async (req, res) => {
     // Verificar si el usuario ya existe
     let user = await User.findOne({ email })
     if (user) {
-      return res.status(400).json({ msg: 'El usuario ya existe' })
+      return res.status(400).json({ message: 'Email already registered' })
     }
 
     // Crear un nuevo usuario
@@ -62,6 +62,7 @@ const register = async (req, res) => {
 }
 
 // Controlador para el inicio de sesión
+// Controlador para el inicio de sesión
 const login = async (req, res) => {
   const { email, password } = req.body
 
@@ -76,7 +77,7 @@ const login = async (req, res) => {
     // Verificar si el usuario existe
     let user = await User.findOne({ email })
     if (!user) {
-      return res.status(400).json({ msg: 'Credenciales inválidas' })
+      return res.status(404).json({ msg: 'Usuario no encontrado' }) // Aquí se especifica el error
     }
 
     // Comparar las contraseñas
@@ -86,9 +87,7 @@ const login = async (req, res) => {
     }
 
     // Crear y devolver el token JWT
-    const payload = {
-      user: { id: user.id }
-    }
+    const payload = { user: { id: user.id } }
 
     jwt.sign(
       payload,
