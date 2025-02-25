@@ -57,6 +57,12 @@ footer {
   margin: 5px 0;
   font-size: 1rem;
 }
+.social-links {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  font-size: 24px;
+}
 
 .footer-section p {
   margin: 0;
@@ -66,16 +72,47 @@ footer {
 /* Ajustes responsivos */
 @media (max-width: 768px) {
   footer {
-    height: 50px;
-    font-size: 0.8rem;
+    font-size: 0.4rem;
+    height: 60px;
   }
 
   .footer-content {
-    flex-direction: column;
+    align-items: center;
     text-align: center;
   }
 
-  .footer-section {
-    margin: 2px 0;
+  /* Ocultar encabezados en móviles */
+  .footer-section h3 {
+    display: none;
+  }
+
+  .footer-section p {
+    font-size: 0.5rem;
+  }
+  .social-links {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    font-size: 20px;
+  }
+
+  .footer-socials a {
+    margin: 0 4px;
+    font-size: rem;
+  }
+}
+
+/* Ajustes para pantallas muy pequeñas */
+@media (max-width: 480px) {
+  footer {
+    font-size: 0.4rem;
+  }
+
+  .footer-section p {
+    font-size: 0.6rem;
+  }
+
+  .footer-socials a {
+    font-size: 0.8rem;
   }
 }

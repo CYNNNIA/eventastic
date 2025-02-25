@@ -1,110 +1,161 @@
-const Event = require('../models/Event')
+const { MongoClient, ObjectId } = require('mongodb');
+const path = require('path');
+const multer = require('multer');
 
-// Obtener todos los eventos
-const getEvents = async (req, res) => {
-  try {
-    const events = await Event.find()
-    res.status(200).json(events)
-  } catch (error) {
-    console.error('Error al obtener eventos:', error)
-    res.status(500).json({ msg: 'Error al obtener eventos' })
+const uri = process.env.MONGO_URI || 'mongodb://localhost:27017';
+const client = new MongoClient(uri);
+
+// 📂 Configuración de Multer para subida de imágenes
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, '../uploads')); // ✅ Guarda las imágenes en la carpeta uploads
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`); // ✅ Nombre único para cada imagen
   }
-}
+});
 
-// Obtener evento por ID
-const getEventById = async (req, res) => {
+const upload = multer({ storage });
+
+// ✅ Exportamos el middleware de Multer para usarlo en las rutas
+exports.upload = upload;
+
+// 📥 Obtener todos los eventos
+exports.getEvents = async (req, res) => {
   try {
-    const event = await Event.findById(req.params.id)
-    if (!event) return res.status(404).json({ msg: 'Evento no encontrado' })
-    res.status(200).json(event)
-  } catch (error) {
-    console.error('Error al obtener evento:', error)
-    res.status(500).json({ msg: 'Error al obtener evento' })
+    await client.connect();
+    const db = client.db('eventastic');
+    const events = await db.collection('events').find().toArray();
+    res.json(events);
+  } catch (err) {
+    console.error('❌ Error al obtener eventos:', err);
+    res.status(500).json({ error: 'Error al obtener eventos' });
+  } finally {
+    await client.close();
   }
-}
+};
 
-// Crear evento
-const createEvent = async (req, res) => {
+// 📥 Obtener evento por ID
+exports.getEventById = async (req, res) => {
   try {
-    const { title, description, date, location } = req.body
-    const newEvent = new Event({
+    await client.connect();
+    const db = client.db('eventastic');
+    const event = await db.collection('events').findOne({ _id: new ObjectId(req.params.id) });
+
+    if (!event) return res.status(404).json({ msg: 'Evento no encontrado' });
+
+    res.json(event);
+  } catch (err) {
+    console.error('❌ Error al obtener el evento:', err);
+    res.status(500).json({ error: 'Error al obtener el evento' });
+  } finally {
+    await client.close();
+  }
+};
+
+// ➕ Crear un nuevo evento
+exports.createEvent = async (req, res) => {
+  try {
+    const { title, description, date, location } = req.body;
+    const imagePath = req.file ? `/uploads/${req.file.filename}` : null;
+
+    if (!title || !description || !date || !location) {
+      return res.status(400).json({ msg: 'Todos los campos son obligatorios.' });
+    }
+
+    await client.connect();
+    const db = client.db('eventastic');
+
+    const newEvent = {
       title,
       description,
       date,
       location,
-      createdBy: req.user.id
-    })
-    await newEvent.save()
-    res.status(201).json(newEvent)
-  } catch (error) {
-    console.error('Error al crear evento:', error)
-    res.status(500).json({ msg: 'Error al crear evento' })
+      image: imagePath,
+      attendees: []
+    };
+
+    const result = await db.collection('events').insertOne(newEvent);
+
+    res.status(201).json({ msg: 'Evento creado con éxito.', event: result.ops[0] });
+  } catch (err) {
+    console.error('❌ Error al crear el evento:', err);
+    res.status(500).json({ error: 'Error al crear el evento' });
+  } finally {
+    await client.close();
   }
-}
+};
 
-// Unirse al evento
-const joinEvent = async (req, res) => {
+// ✅ Unirse al evento
+exports.joinEvent = async (req, res) => {
   try {
-    const event = await Event.findById(req.params.id)
-    if (!event) return res.status(404).json({ msg: 'Evento no encontrado' })
+    await client.connect();
+    const db = client.db('eventastic');
+    const eventId = new ObjectId(req.params.id);
+    const userId = req.user.id;
 
-    if (event.attendees.includes(req.user.id)) {
-      return res.status(400).json({ msg: 'Ya estás unido a este evento' })
+    const result = await db.collection('events').updateOne(
+      { _id: eventId },
+      { $addToSet: { attendees: userId } }
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ msg: 'Evento no encontrado' });
     }
 
-    event.attendees.push(req.user.id)
-    await event.save()
-    res.status(200).json({ msg: 'Te has unido al evento' })
-  } catch (error) {
-    console.error('Error al unirse al evento:', error)
-    res.status(500).json({ msg: 'Error al unirse al evento' })
+    res.json({ msg: 'Te has unido al evento con éxito.' });
+  } catch (err) {
+    console.error('❌ Error al unirse al evento:', err);
+    res.status(500).json({ error: 'Error al unirse al evento' });
+  } finally {
+    await client.close();
   }
-}
+};
 
-// Salir del evento
-const leaveEvent = async (req, res) => {
+// 🚪 Salir del evento
+exports.leaveEvent = async (req, res) => {
   try {
-    const event = await Event.findById(req.params.id)
-    if (!event) return res.status(404).json({ msg: 'Evento no encontrado' })
+    await client.connect();
+    const db = client.db('eventastic');
+    const eventId = new ObjectId(req.params.id);
+    const userId = req.user.id;
 
-    if (!event.attendees.includes(req.user.id)) {
-      return res.status(400).json({ msg: 'No estás unido a este evento' })
+    const result = await db.collection('events').updateOne(
+      { _id: eventId },
+      { $pull: { attendees: userId } }
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ msg: 'Evento no encontrado' });
     }
 
-    event.attendees = event.attendees.filter(
-      (attendeeId) => attendeeId.toString() !== req.user.id
-    )
-    await event.save()
-    res.status(200).json({ msg: 'Has salido del evento' })
-  } catch (error) {
-    console.error('Error al salir del evento:', error)
-    res.status(500).json({ msg: 'Error al salir del evento' })
+    res.json({ msg: 'Has salido del evento con éxito.' });
+  } catch (err) {
+    console.error('❌ Error al salir del evento:', err);
+    res.status(500).json({ error: 'Error al salir del evento' });
+  } finally {
+    await client.close();
   }
-}
+};
 
-// Eliminar evento
-const deleteEvent = async (req, res) => {
+// ❌ Eliminar evento
+exports.deleteEvent = async (req, res) => {
   try {
-    const event = await Event.findById(req.params.id)
-    if (!event) return res.status(404).json({ msg: 'Evento no encontrado' })
+    await client.connect();
+    const db = client.db('eventastic');
+    const eventId = new ObjectId(req.params.id);
 
-    if (event.createdBy.toString() !== req.user.id) {
-      return res.status(403).json({ msg: 'No autorizado' })
+    const result = await db.collection('events').deleteOne({ _id: eventId });
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ msg: 'Evento no encontrado' });
     }
 
-    await event.deleteOne()
-    res.status(200).json({ msg: 'Evento eliminado' })
-  } catch (error) {
-    console.error('Error al eliminar evento:', error)
-    res.status(500).json({ msg: 'Error al eliminar evento' })
+    res.json({ msg: 'Evento eliminado' });
+  } catch (err) {
+    console.error('❌ Error al eliminar el evento:', err);
+    res.status(500).json({ error: 'Error al eliminar el evento' });
+  } finally {
+    await client.close();
   }
-}
-
-module.exports = {
-  getEvents,
-  getEventById,
-  createEvent,
-  joinEvent,
-  leaveEvent,
-  deleteEvent
-}
+};

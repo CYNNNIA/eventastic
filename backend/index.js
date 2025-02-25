@@ -56,6 +56,6 @@ app.get('/', (req, res) => {
 
 // Puerto del servidor
 const PORT = process.env.PORT || 5001
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`)
+app.listen(5001, () => {
+  console.log('Servidor corriendo en http://localhost:5001')
 })

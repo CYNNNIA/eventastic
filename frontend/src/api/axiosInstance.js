@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { jwtDecode } from 'jwt-decode';
 
+// Configura la base URL de tu API
 const axiosInstance = axios.create({
   baseURL: 'http://localhost:5001/api', // Ajusta si es necesario
   headers: {
@@ -8,31 +8,12 @@ const axiosInstance = axios.create({
   },
 });
 
-// Interceptor para manejar el token y errores globales
+// ✅ Interceptor para añadir el token JWT en cada petición
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token'); // Recupera el token almacenado
     if (token) {
-      try {
-        const decoded = jwtDecode(token);
-        const currentTime = Date.now() / 1000;
-
-        // Si el token está expirado
-        if (decoded.exp < currentTime) {
-          localStorage.removeItem('token');
-          window.location.href = '/login';
-          alert('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
-          return Promise.reject('Token expirado');
-        }
-
-        config.headers.Authorization = `Bearer ${token}`;
-      } catch (error) {
-        // Si el token es inválido o corrupto
-        localStorage.removeItem('token');
-        window.location.href = '/login';
-        alert('Token inválido. Por favor, inicia sesión nuevamente.');
-        return Promise.reject('Token inválido');
-      }
+      config.headers.Authorization = `Bearer ${token}`; // Añade el token al header
     }
     return config;
   },
@@ -41,15 +22,26 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-// Manejo de errores globales (opcional)
+// ❌ Interceptor para manejar errores globalmente
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Si el token expira o es inválido
     if (error.response && error.response.status === 401) {
-      localStorage.removeItem('token');
-      window.location.href = '/login';
-      alert('No autorizado. Por favor, inicia sesión nuevamente.');
+      console.warn('⚠️ Sesión expirada. Redirigiendo al login...');
+      localStorage.removeItem('token'); // Elimina el token
+      window.location.href = '/login';  // Redirige al login
     }
+
+    // Manejo genérico de errores
+    if (error.response) {
+      console.error(`🚨 Error ${error.response.status}:`, error.response.data);
+    } else if (error.request) {
+      console.error('🚨 No se recibió respuesta del servidor.');
+    } else {
+      console.error('🚨 Error al configurar la solicitud:', error.message);
+    }
+
     return Promise.reject(error);
   }
 );
