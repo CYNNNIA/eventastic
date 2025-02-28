@@ -1,0 +1,98 @@
+/* Ajustes generales */
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: linear-gradient(135deg, #38b6ff, #32a852);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+  font-size: 0.6rem;
+  z-index: 10;
+  padding: 2px 4px;
+  box-sizing: border-box;
+}
+
+/* Contenido del Footer */
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+
+/* Sección individual del footer */
+.footer-section {
+  flex: 1;
+  text-align: center;
+  margin: 0;
+  word-wrap: break-word;
+}
+
+.footer-section h3 {
+  display: none; /* Ocultar encabezados */
+}
+
+.footer-section p {
+  margin: 0;
+  font-size: 0.5rem;
+  line-height: 1;
+  word-break: break-word;
+}
+
+/* Ajustes responsivos para móviles */
+@media (max-width: 768px) {
+  footer {
+    padding: 1px 2px;
+    font-size: 0.5rem;
+  }
+
+  .footer-content {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .footer-section {
+    width: 100%;
+    margin-bottom: 1px;
+  }
+
+  .footer-section p {
+    font-size: 0.45rem;
+  }
+
+  .footer-socials a {
+    margin: 0 2px;
+    font-size: 0.8rem;
+  }
+
+  .footer-bottom {
+    font-size: 0.4rem;
+    margin-top: 1px;
+  }
+}
+
+/* Ajustes para pantallas muy pequeñas */
+@media (max-width: 480px) {
+  footer {
+    padding: 1px;
+    font-size: 0.45rem;
+  }
+
+  .footer-section p {
+    font-size: 0.4rem;
+  }
+
+  .footer-socials a {
+    font-size: 0.7rem;
+  }
+
+  .footer-bottom {
+    font-size: 0.35rem;
+  }
+}

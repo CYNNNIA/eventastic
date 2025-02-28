@@ -1,9 +1,11 @@
 const Event = require('../models/Event')
 
 // Obtener todos los eventos
+// Obtener todos los eventos
 const getEvents = async (req, res) => {
   try {
     const events = await Event.find()
+    console.log('📢 Eventos obtenidos en la API:', events) // Log para depuración
     res.status(200).json(events)
   } catch (error) {
     console.error('Error al obtener eventos:', error)
@@ -22,6 +24,8 @@ const getEventById = async (req, res) => {
     res.status(500).json({ msg: 'Error al obtener evento' })
   }
 }
+
+module.exports = { getEvents, getEventById }
 
 // Crear evento
 const createEvent = async (req, res) => {
