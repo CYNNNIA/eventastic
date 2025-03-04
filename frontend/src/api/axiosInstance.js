@@ -1,7 +1,6 @@
 import axios from 'axios'
 import { jwtDecode } from 'jwt-decode'
 
-import axios from 'axios';
 
 const axiosInstance = axios.create({
   baseURL: 'https://eventastic-production.up.railway.app', // Cambia esto con la URL de Railway
