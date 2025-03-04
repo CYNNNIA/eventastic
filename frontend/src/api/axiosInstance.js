@@ -1,12 +1,14 @@
 import axios from 'axios'
 import { jwtDecode } from 'jwt-decode'
 
+import axios from 'axios';
+
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:5001/api',
+  baseURL: 'eventastic-production.up.railway.app', // Cambia esto con la URL de Railway
   headers: {
-    'Content-Type': 'application/json'
-  }
-})
+    'Content-Type': 'application/json',
+  },
+});
 
 // Interceptor para adjuntar el token en cada solicitud
 axiosInstance.interceptors.request.use(
