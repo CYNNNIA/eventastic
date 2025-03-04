@@ -1,44 +1,71 @@
-import React, { useState } from 'react'
-import axiosInstance from '../api/axiosInstance'
-import { useNavigate } from 'react-router-dom'
-import '../styles/CreateEvent.css'
-import '../styles/spinner.css' // Importamos estilos del spinner
+import React, { useReducer, useCallback } from 'react';
+import axiosInstance from '../api/axiosInstance';
+import { useNavigate } from 'react-router-dom';
+import '../styles/CreateEvent.css';
+
+const initialState = {
+  title: '',
+  description: '',
+  date: '',
+  location: '',
+  image: null,
+  loading: false,
+};
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'SET_FIELD':
+      return { ...state, [action.field]: action.value };
+    case 'SET_IMAGE':
+      return { ...state, image: action.value };
+    case 'SET_LOADING':
+      return { ...state, loading: action.value };
+    case 'RESET_FORM':
+      return initialState;
+    default:
+      return state;
+  }
+};
 
 const CreateEvent = () => {
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
-  const [date, setDate] = useState('')
-  const [location, setLocation] = useState('')
-  const [image, setImage] = useState(null)
-  const [loading, setLoading] = useState(false) // Estado de carga
-  const navigate = useNavigate()
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
+  const handleSubmit = useCallback(async (e) => {
+    e.preventDefault();
 
-    const formData = new FormData()
-    formData.append('title', title)
-    formData.append('description', description)
-    formData.append('date', date)
-    formData.append('location', location)
-    if (image) formData.append('image', image)
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Debes iniciar sesión para crear un evento.');
+      return;
+    }
 
-    setLoading(true) // Mostrar spinner al enviar
+    const formData = new FormData();
+    formData.append('title', state.title);
+    formData.append('description', state.description);
+    formData.append('date', state.date);
+    formData.append('location', state.location);
+    if (state.image) formData.append('image', state.image);
+
+    dispatch({ type: 'SET_LOADING', value: true });
 
     try {
-      await axiosInstance.post('/events', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      })
+      const { data } = await axiosInstance.post('/events', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-      alert('Evento creado con éxito.')
-      navigate('/events')
+      alert('Evento creado con éxito.');
+      dispatch({ type: 'RESET_FORM' });
+      navigate('/events');
     } catch (error) {
-      console.error('Error al crear el evento:', error)
-      alert('Error al crear el evento. Inténtalo de nuevo.')
+      alert(error.response?.data?.msg || 'Error al crear el evento.');
     } finally {
-      setLoading(false) // Ocultar spinner al finalizar
+      dispatch({ type: 'SET_LOADING', value: false });
     }
-  }
+  }, [state, navigate]);
 
   return (
     <div className='create-event-page'>
@@ -46,59 +73,19 @@ const CreateEvent = () => {
         <h1 className='create-event-title'>Crear Evento</h1>
 
         <form className='create-event-form' onSubmit={handleSubmit}>
-          <input
-            type='text'
-            placeholder='Título'
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-          />
-          <textarea
-            placeholder='Descripción'
-            rows='4'
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            required
-          ></textarea>
-          <input
-            type='date'
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            required
-          />
-          <input
-            type='text'
-            placeholder='Ubicación'
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            required
-          />
-          <input
-            type='file'
-            accept='image/*'
-            onChange={(e) => setImage(e.target.files[0])}
-          />
+          <input type='text' placeholder='Título' value={state.title} onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'title', value: e.target.value })} required />
+          <textarea placeholder='Descripción' rows='4' value={state.description} onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'description', value: e.target.value })} required></textarea>
+          <input type='date' value={state.date} onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'date', value: e.target.value })} required />
+          <input type='text' placeholder='Ubicación' value={state.location} onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'location', value: e.target.value })} required />
+          <input type='file' accept='image/*' onChange={(e) => dispatch({ type: 'SET_IMAGE', value: e.target.files[0] })} />
 
-          <button
-            type='submit'
-            className='create-event-button'
-            disabled={loading}
-          >
-            {loading ? <div className='spinner'></div> : 'Crear Evento'}
+          <button type='submit' className='create-event-button' disabled={state.loading}>
+            {state.loading ? 'Creando...' : 'Crear Evento'}
           </button>
         </form>
-
-        <div className='event-info'>
-          <h3>Condiciones para Crear un Evento</h3>
-          <ul>
-            <li>El título debe ser claro y representativo.</li>
-            <li>La fecha debe ser futura.</li>
-            <li>La descripción debe incluir todos los detalles.</li>
-          </ul>
-        </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default CreateEvent
+export default CreateEvent;

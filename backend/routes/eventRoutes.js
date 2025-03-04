@@ -1,22 +1,34 @@
-const express = require('express')
-const { protect } = require('../middlewares/authMiddlewares')
+const express = require('express');
 const {
-  createEvent,
   getEvents,
+  createEvent,
   getEventById,
   joinEvent,
   leaveEvent,
   deleteEvent
-} = require('../controllers/eventController') // Asegúrate que las funciones están bien exportadas
+} = require('../controllers/eventController');
+const { protect } = require('../middlewares/authMiddleware');
+const multer = require('multer');
+const path = require('path');
 
-const router = express.Router()
+const router = express.Router();
 
-// ✅ Rutas definidas correctamente
-router.get('/', getEvents) // Obtener todos los eventos
-router.get('/:id', getEventById) // Obtener evento por ID
-router.post('/', protect, createEvent) // Crear evento
-router.post('/:id/join', protect, joinEvent) // Unirse al evento
-router.post('/:id/leave', protect, leaveEvent) // Salir del evento
-router.delete('/:id', protect, deleteEvent) // Eliminar evento
+// Configurar almacenamiento de imágenes con Multer
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, '../uploads'));
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  }
+});
+const upload = multer({ storage });
 
-module.exports = router
+router.get('/', getEvents);
+router.post('/', protect, upload.single('image'), createEvent);
+router.get('/:id', getEventById);
+router.post('/:id/join', protect, joinEvent);
+router.post('/:id/leave', protect, leaveEvent);
+router.delete('/:id', protect, deleteEvent);
+
+module.exports = router;

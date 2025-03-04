@@ -1,114 +1,137 @@
-const Event = require('../models/Event')
+const mongoose = require('mongoose');
+const Event = require('../models/Event');
 
-// Obtener todos los eventos
 // Obtener todos los eventos
 const getEvents = async (req, res) => {
   try {
-    const events = await Event.find()
-    console.log('📢 Eventos obtenidos en la API:', events) // Log para depuración
-    res.status(200).json(events)
+    const events = await Event.find().populate('createdBy', 'name email');
+    res.json(events);
   } catch (error) {
-    console.error('Error al obtener eventos:', error)
-    res.status(500).json({ msg: 'Error al obtener eventos' })
+    console.error('❌ Error al obtener eventos:', error);
+    res.status(500).json({ msg: 'Error en el servidor' });
   }
-}
+};
 
-// Obtener evento por ID
-const getEventById = async (req, res) => {
-  try {
-    const event = await Event.findById(req.params.id)
-    if (!event) return res.status(404).json({ msg: 'Evento no encontrado' })
-    res.status(200).json(event)
-  } catch (error) {
-    console.error('Error al obtener evento:', error)
-    res.status(500).json({ msg: 'Error al obtener evento' })
-  }
-}
-
-module.exports = { getEvents, getEventById }
-
-// Crear evento
+// Crear un nuevo evento
 const createEvent = async (req, res) => {
   try {
-    const { title, description, date, location } = req.body
+    console.log('📢 Datos recibidos en el backend:', req.body);
+    console.log('📸 Archivo recibido:', req.file);
+    console.log('🔑 Usuario autenticado:', req.user);
+
+    const { title, description, date, location } = req.body;
+    const createdBy = req.user ? req.user.id : null; 
+
+    if (!title || !description || !date || !location || !createdBy) {
+      console.error('🚨 Datos faltantes:', { title, description, date, location, createdBy });
+      return res.status(400).json({ msg: 'Todos los campos son obligatorios' });
+    }
+
     const newEvent = new Event({
       title,
       description,
-      date,
+      date: new Date(date),
       location,
-      createdBy: req.user.id
-    })
-    await newEvent.save()
-    res.status(201).json(newEvent)
+      createdBy,
+      attendees: [],
+      image: req.file ? `/uploads/${req.file.filename}` : '',
+    });
+
+    await newEvent.save();
+    console.log('✅ Evento creado con éxito:', newEvent);
+    res.status(201).json({ msg: 'Evento creado con éxito', event: newEvent });
   } catch (error) {
-    console.error('Error al crear evento:', error)
-    res.status(500).json({ msg: 'Error al crear evento' })
+    console.error('❌ Error al crear evento:', error);
+    res.status(500).json({ msg: 'Error en el servidor' });
   }
-}
+};
 
-// Unirse al evento
-const joinEvent = async (req, res) => {
+// Obtener un evento por ID
+const getEventById = async (req, res) => {
   try {
-    const event = await Event.findById(req.params.id)
-    if (!event) return res.status(404).json({ msg: 'Evento no encontrado' })
+    const event = await Event.findById(req.params.id).populate('createdBy', 'name email');
 
-    if (event.attendees.includes(req.user.id)) {
-      return res.status(400).json({ msg: 'Ya estás unido a este evento' })
+    if (!event) {
+      return res.status(404).json({ msg: 'Evento no encontrado' });
     }
 
-    event.attendees.push(req.user.id)
-    await event.save()
-    res.status(200).json({ msg: 'Te has unido al evento' })
+    res.json(event);
   } catch (error) {
-    console.error('Error al unirse al evento:', error)
-    res.status(500).json({ msg: 'Error al unirse al evento' })
+    console.error('❌ Error al obtener evento:', error);
+    res.status(500).json({ msg: 'Error en el servidor' });
   }
-}
+};
 
-// Salir del evento
+// Unirse a un evento
+const joinEvent = async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id);
+
+    if (!event) {
+      return res.status(404).json({ msg: 'Evento no encontrado' });
+    }
+
+    if (event.attendees.includes(req.user.id)) {
+      return res.status(400).json({ msg: 'Ya estás unido a este evento' });
+    }
+
+    event.attendees.push(req.user.id);
+    await event.save();
+
+    res.json({ msg: 'Te has unido al evento', event });
+  } catch (error) {
+    console.error('❌ Error al unirse al evento:', error);
+    res.status(500).json({ msg: 'Error en el servidor' });
+  }
+};
+
+// Salir de un evento
 const leaveEvent = async (req, res) => {
   try {
-    const event = await Event.findById(req.params.id)
-    if (!event) return res.status(404).json({ msg: 'Evento no encontrado' })
+    const event = await Event.findById(req.params.id);
 
-    if (!event.attendees.includes(req.user.id)) {
-      return res.status(400).json({ msg: 'No estás unido a este evento' })
+    if (!event) {
+      return res.status(404).json({ msg: 'Evento no encontrado' });
     }
 
     event.attendees = event.attendees.filter(
-      (attendeeId) => attendeeId.toString() !== req.user.id
-    )
-    await event.save()
-    res.status(200).json({ msg: 'Has salido del evento' })
-  } catch (error) {
-    console.error('Error al salir del evento:', error)
-    res.status(500).json({ msg: 'Error al salir del evento' })
-  }
-}
+      (attendee) => attendee.toString() !== req.user.id
+    );
 
-// Eliminar evento
+    await event.save();
+    res.json({ msg: 'Has salido del evento', event });
+  } catch (error) {
+    console.error('❌ Error al salir del evento:', error);
+    res.status(500).json({ msg: 'Error en el servidor' });
+  }
+};
+
+// Eliminar un evento
 const deleteEvent = async (req, res) => {
   try {
-    const event = await Event.findById(req.params.id)
-    if (!event) return res.status(404).json({ msg: 'Evento no encontrado' })
+    const event = await Event.findById(req.params.id);
 
-    if (event.createdBy.toString() !== req.user.id) {
-      return res.status(403).json({ msg: 'No autorizado' })
+    if (!event) {
+      return res.status(404).json({ msg: 'Evento no encontrado' });
     }
 
-    await event.deleteOne()
-    res.status(200).json({ msg: 'Evento eliminado' })
+    if (event.createdBy.toString() !== req.user.id) {
+      return res.status(403).json({ msg: 'No tienes permiso para eliminar este evento' });
+    }
+
+    await event.deleteOne();
+    res.json({ msg: 'Evento eliminado correctamente' });
   } catch (error) {
-    console.error('Error al eliminar evento:', error)
-    res.status(500).json({ msg: 'Error al eliminar evento' })
+    console.error('❌ Error al eliminar el evento:', error);
+    res.status(500).json({ msg: 'Error en el servidor' });
   }
-}
+};
 
 module.exports = {
   getEvents,
-  getEventById,
   createEvent,
+  getEventById,
   joinEvent,
   leaveEvent,
   deleteEvent
-}
+};

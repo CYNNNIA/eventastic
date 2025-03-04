@@ -1,59 +1,39 @@
-require('dotenv').config()
-const express = require('express')
-const cors = require('cors')
-const path = require('path')
-const multer = require('multer')
-const connectDB = require('./config/db')
-const authRoutes = require('./routes/authRoutes')
-const eventRoutes = require('./routes/eventRoutes')
+const express = require('express');
+const dotenv = require('dotenv');
+const cors = require('cors');
+const connectDB = require('./config/db');
+const authRoutes = require('./routes/authRoutes');
+const eventRoutes = require('./routes/eventRoutes');
+const path = require('path');
 
-const app = express()
+// Cargar variables de entorno
+dotenv.config();
 
-// Conectar a MongoDB
-connectDB()
+// Conectar a la base de datos
+connectDB();
 
-// Middleware para CORS
-app.use(
-  cors({
-    origin: ['http://localhost:3000'],
-    credentials: true
-  })
-)
+const app = express();
 
-// Middleware para JSON
-app.use(express.json())
+// Middleware para permitir solicitudes desde el frontend
+app.use(cors());
 
-// Configuración de Multer para subir archivos
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, 'uploads'))
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`)
-  }
-})
+// Middleware para parsear JSON en las peticiones
+app.use(express.json());
 
-const upload = multer({ storage })
+// Servir archivos estáticos desde la carpeta "uploads"
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Ruta para subir archivos
-app.post('/upload', upload.single('file'), (req, res) => {
-  res.json({ filePath: `/uploads/${req.file.filename}` })
-})
+// Rutas
+app.use('/api/auth', authRoutes);
+app.use('/api/events', eventRoutes);
 
-// Servir archivos estáticos
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
-
-// Rutas principales
-app.use('/api/auth', authRoutes)
-app.use('/api/events', eventRoutes)
-
-// Ruta raíz para verificar el estado del servidor
+// Ruta por defecto
 app.get('/', (req, res) => {
-  res.send('API funcionando correctamente 🚀')
-})
+  res.send('🚀 API de Eventastic corriendo correctamente...');
+});
 
-// Puerto del servidor
-const PORT = process.env.PORT || 5001
+// Escuchar en el puerto especificado
+const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`)
-})
+  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+});

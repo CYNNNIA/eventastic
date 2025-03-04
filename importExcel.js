@@ -1,11 +1,39 @@
 const { MongoClient, ObjectId } = require('mongodb')
 const XLSX = require('xlsx')
 const path = require('path')
+const fs = require('fs')
+const axios = require('axios')
 
 const uri = 'mongodb://localhost:27017'
 const client = new MongoClient(uri)
-
 const workbook = XLSX.readFile(path.resolve(__dirname, 'eventastic_data.xlsx'))
+
+// 📂 Definir la ruta de la carpeta 'uploads' dentro del backend
+const uploadsDir = path.join(__dirname, 'backend/uploads')
+
+// ✅ Crear la carpeta 'uploads' si no existe
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true })
+}
+
+// 🔽 Función para descargar y guardar imágenes aleatorias en 'uploads'
+async function downloadImage(url, filename) {
+  const filePath = path.join(uploadsDir, filename)
+  const writer = fs.createWriteStream(filePath)
+
+  const response = await axios({
+    url,
+    method: 'GET',
+    responseType: 'stream'
+  })
+
+  response.data.pipe(writer)
+
+  return new Promise((resolve, reject) => {
+    writer.on('finish', () => resolve(`/uploads/${filename}`))
+    writer.on('error', reject)
+  })
+}
 
 async function run() {
   try {
@@ -36,24 +64,29 @@ async function run() {
       console.log(`📥 ${usuarios.length} usuarios importados`)
     }
 
-    // 📥 Formatear e insertar eventos
+    // 📥 Formatear e insertar eventos con imágenes aleatorias
     if (eventos.length) {
-      const formattedEvents = eventos.map((event) => ({
-        title: event.title,
-        description: event.description,
-        date: new Date(event.date),
-        location: event.location,
-        createdBy: new ObjectId(), // Generar un ObjectId aleatorio
-        attendees: [],
-        image: ''
-      }))
+      const formattedEvents = await Promise.all(
+        eventos.map(async (event, index) => {
+          const imageUrl = `https://picsum.photos/500/300?random=${index}`
+          const filename = `event_${index}.jpg`
+          const localImagePath = await downloadImage(imageUrl, filename)
+
+          return {
+            title: event.title,
+            description: event.description,
+            date: new Date(event.date),
+            location: event.location,
+            createdBy: new ObjectId(),
+            attendees: [],
+            image: localImagePath // Ruta de la imagen guardada en 'uploads'
+          }
+        })
+      )
 
       console.log('📢 Eventos antes de insertar:', formattedEvents)
-
       await eventsCollection.insertMany(formattedEvents)
-      console.log(
-        `📥 ${formattedEvents.length} eventos importados correctamente`
-      )
+      console.log(`📥 ${formattedEvents.length} eventos importados correctamente`)
     }
 
     // 📥 Insertar reservas

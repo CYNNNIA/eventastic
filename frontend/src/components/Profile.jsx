@@ -1,51 +1,52 @@
-import React, { useEffect, useState } from 'react'
-import axiosInstance from '../api/axiosInstance'
-import { useNavigate } from 'react-router-dom'
-import '../styles/Profile.css'
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import useFetch from '../utils/useFetch';
+import axiosInstance from '../api/axiosInstance';
+import '../styles/Profile.css';
 
 const Profile = () => {
-  const [user, setUser] = useState(null)
-  const [createdEvents, setCreatedEvents] = useState([])
-  const [joinedEvents, setJoinedEvents] = useState([])
-  const [error, setError] = useState('')
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const { data, loading, error, setData } = useFetch('/auth/me');
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const { data } = await axiosInstance.get('/auth/me')
-        setUser(data.user)
-        setCreatedEvents(data.createdEvents)
-        setJoinedEvents(data.joinedEvents)
-      } catch (err) {
-        setError('Error al cargar el perfil.')
-        navigate('/login')
-      }
-    }
-
-    fetchProfile()
-  }, [navigate])
-
-  const handleLeaveEvent = async (eventId) => {
-    try {
-      await axiosInstance.post(`/events/${eventId}/leave`)
-      setJoinedEvents((prev) => prev.filter((event) => event._id !== eventId))
-    } catch {
-      alert('Error al salir del evento.')
-    }
+  if (loading) return <p>Cargando perfil...</p>;
+  if (error) return <p>Error al cargar el perfil.</p>;
+  if (!data) {
+    console.warn('Usuario no encontrado, redirigiendo a login...');
+    navigate('/login');
+    return null;
   }
 
+  const { user, createdEvents, joinedEvents } = data;
+
+  // Manejo de eliminación de eventos
   const handleDeleteEvent = async (eventId) => {
     try {
-      await axiosInstance.delete(`/events/${eventId}`)
-      setCreatedEvents((prev) => prev.filter((event) => event._id !== eventId))
-    } catch {
-      alert('Error al eliminar el evento.')
+      await axiosInstance.delete(`/events/${eventId}`);
+      setData((prev) => ({
+        ...prev,
+        createdEvents: prev.createdEvents.filter((event) => event._id !== eventId),
+      }));
+      alert('Evento eliminado correctamente.');
+    } catch (error) {
+      console.error('❌ Error al eliminar el evento:', error);
+      alert('Error al eliminar el evento.');
     }
-  }
+  };
 
-  if (error) return <p>{error}</p>
-  if (!user) return <p>Cargando perfil...</p>
+  // Manejo de salida de eventos
+  const handleLeaveEvent = async (eventId) => {
+    try {
+      await axiosInstance.post(`/events/${eventId}/leave`);
+      setData((prev) => ({
+        ...prev,
+        joinedEvents: prev.joinedEvents.filter((event) => event._id !== eventId),
+      }));
+      alert('Has salido del evento.');
+    } catch (error) {
+      console.error('❌ Error al salir del evento:', error);
+      alert('Error al salir del evento.');
+    }
+  };
 
   return (
     <div className='profile-container'>
@@ -57,12 +58,8 @@ const Profile = () => {
           className='profile-avatar'
         />
       )}
-      <p>
-        <strong>Nombre:</strong> {user.name}
-      </p>
-      <p>
-        <strong>Email:</strong> {user.email}
-      </p>
+      <p><strong>Nombre:</strong> {user.name}</p>
+      <p><strong>Email:</strong> {user.email}</p>
 
       <h2>Eventos Creados</h2>
       {createdEvents.length === 0 ? (
@@ -72,10 +69,7 @@ const Profile = () => {
           {createdEvents.map((event) => (
             <div key={event._id} className='event-card'>
               {event.image && (
-                <img
-                  src={`http://localhost:5001${event.image}`}
-                  alt={event.title}
-                />
+                <img src={`http://localhost:5001${event.image}`} alt={event.title} />
               )}
               <div className='event-card-content'>
                 <h3>{event.title}</h3>
@@ -97,10 +91,7 @@ const Profile = () => {
           {joinedEvents.map((event) => (
             <div key={event._id} className='event-card'>
               {event.image && (
-                <img
-                  src={`http://localhost:5001${event.image}`}
-                  alt={event.title}
-                />
+                <img src={`http://localhost:5001${event.image}`} alt={event.title} />
               )}
               <div className='event-card-content'>
                 <h3>{event.title}</h3>
@@ -114,7 +105,7 @@ const Profile = () => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default Profile
+export default Profile;
