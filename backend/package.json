@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "Backend para el proyecto Eventastic",
   "main": "index.js",
-  "scripts": {
-  "start": "node index.js",
-  "postinstall": "npm install"
+"scripts": {
+  "start": "node backend/index.js",
+  "dev": "nodemon backend/index.js"
 },
   "repository": {
     "type": "git",
