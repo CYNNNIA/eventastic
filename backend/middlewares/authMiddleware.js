@@ -8,7 +8,7 @@ const protect = async (req, res, next) => {
     req.headers.authorization &&
     req.headers.authorization.startsWith('Bearer')
   ) {
-    token = req.headers.authorization.split(' ')[1] 
+    token = req.headers.authorization.split(' ')[1]
   }
 
   if (!token) {
@@ -16,18 +16,18 @@ const protect = async (req, res, next) => {
   }
 
   try {
-    
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
 
-  
-    const user = await User.findById(decoded.user.id).select('-password')
+    // 🔹 Usar `decoded.id` en lugar de `decoded.user.id`
+    const user = await User.findById(decoded.id).select('-password')
+
     if (!user) {
       return res
         .status(401)
         .json({ msg: 'No autorizado, usuario no encontrado' })
     }
 
-    req.user = user 
+    req.user = user
     next()
   } catch (error) {
     console.error('❌ Error en autenticación:', error)
