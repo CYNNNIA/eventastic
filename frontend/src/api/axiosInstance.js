@@ -4,7 +4,7 @@ import { jwtDecode } from 'jwt-decode'
 const axiosInstance = axios.create({
   baseURL:
     process.env.NODE_ENV === 'production'
-      ? 'https://eventastic-production.up.railway.app/api' 
+      ? 'eventastic-cynns-projects.vercel.app/api' 
       : 'http://localhost:5001/api', 
   headers: {
     'Content-Type': 'application/json',
