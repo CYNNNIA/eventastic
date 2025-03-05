@@ -1,14 +1,15 @@
 const mongoose = require('mongoose');
-require('dotenv').config();
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI, {
-      dbName: 'proyecto10-noviembre', // Aseguramos que use la DB correcta
-    });
-    console.log('✅ MongoDB conectado correctamente...');
+    const mongoURI = process.env.NODE_ENV === 'production'
+      ? process.env.MONGO_URI // Usa la base de datos en la nube en producción
+      : 'mongodb://localhost:27017/eventastic'; // Usa la base de datos local en desarrollo
+
+    await mongoose.connect(mongoURI);
+    console.log(`✅ Conectado a MongoDB: ${mongoURI}`);
   } catch (error) {
-    console.error('❌ Error al conectar MongoDB:', error.message);
+    console.error('❌ Error al conectar MongoDB:', error);
     process.exit(1);
   }
 };
