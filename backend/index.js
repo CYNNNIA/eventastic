@@ -15,8 +15,13 @@ connectDB()
 const app = express()
 
 // Middleware para permitir solicitudes desde el frontend
-app.use(cors())
+const corsOptions = {
+  origin: ['https://eventastic-git-main-cynns-projects.vercel.app', 'https://eventastic-iota.vercel.app'],
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+};
 
+app.use(cors(corsOptions));
 // Middleware para parsear JSON en las peticiones
 app.use(express.json())
 
