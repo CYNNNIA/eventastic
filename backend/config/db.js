@@ -1,16 +1,16 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+require('dotenv').config();
 
 const connectDB = async () => {
   try {
-    await mongoose.connect('mongodb://localhost:27017/eventastic', {
-      useNewUrlParser: true,
-      useUnifiedTopology: true
-    })
-    console.log('✅ MongoDB conectado correctamente...')
+    await mongoose.connect(process.env.MONGO_URI, {
+      dbName: 'proyecto10-noviembre', // Aseguramos que use la DB correcta
+    });
+    console.log('✅ MongoDB conectado correctamente...');
   } catch (error) {
-    console.error('❌ Error al conectar MongoDB:', error)
-    process.exit(1)
+    console.error('❌ Error al conectar MongoDB:', error.message);
+    process.exit(1);
   }
-}
+};
 
-module.exports = connectDB
+module.exports = connectDB;
