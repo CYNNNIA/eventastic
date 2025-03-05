@@ -2,14 +2,12 @@ import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 
 const axiosInstance = axios.create({
-  baseURL:
-    process.env.NODE_ENV === 'production'
-      ? 'https://eventastic-production.up.railway.app/api' // CONFIRMAR QUE ESTA URL ES CORRECTA
-      : 'http://localhost:5001/api',
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  baseURL: process.env.NODE_ENV === 'production'
+    ? 'https://eventastic-production.up.railway.app/api' 
+    : 'http://localhost:5001/api',
+  headers: { 'Content-Type': 'application/json' },
 });
+
 
 // Interceptor para adjuntar el token en cada solicitud
 axiosInstance.interceptors.request.use(
