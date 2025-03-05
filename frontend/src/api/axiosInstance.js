@@ -2,11 +2,14 @@ import axios from 'axios'
 import { jwtDecode } from 'jwt-decode'
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:5001/api',
+  baseURL:
+    process.env.NODE_ENV === 'production'
+      ? 'https://eventastic-git-main-cynns-projects.vercel.app/api'
+      : 'http://localhost:5001/api',
   headers: {
-    'Content-Type': 'application/json'
-  }
-})
+    'Content-Type': 'application/json',
+  },
+});
 
 // Interceptor para adjuntar el token en cada solicitud
 axiosInstance.interceptors.request.use(
