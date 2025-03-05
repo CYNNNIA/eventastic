@@ -1,13 +1,12 @@
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 
-import axios from 'axios';
 
 const axiosInstance = axios.create({
   baseURL:
     process.env.NODE_ENV === 'production'
-      ? 'https://eventastic-production.up.railway.app/api'  // URL del backend en producción
-      : 'http://localhost:5001/api',  // URL del backend en local
+      ? 'https://eventastic-production.up.railway.app/api'  // ✅ URL con `/api`
+      : 'http://localhost:5001/api',  // ✅ URL en local con `/api`
   headers: { 'Content-Type': 'application/json' },
 });
 

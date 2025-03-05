@@ -20,7 +20,7 @@ const Events = () => {
 
   const fetchEvents = async () => {
     try {
-      const { data } = await axiosInstance.get('/events')
+      const { data } = await axiosInstance.get('/api/events'); // ✅ Esto apunta bien al backend
       console.log('📢 Eventos recibidos en el frontend:', data) // Agregar log
       setEvents(data)
       setLoading(false)
