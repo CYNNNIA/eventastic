@@ -6,7 +6,7 @@ import '../styles/Profile.css';
 
 const Profile = () => {
   const navigate = useNavigate();
-  const { data, loading, error, setData } = useFetch('/auth/me');
+  const { data, loading, error, setData } = useFetch('/auth/me'); // ✅ setData ahora está disponible
 
   if (loading) return <p>Cargando perfil...</p>;
   if (error) return <p>Error al cargar el perfil.</p>;
@@ -18,14 +18,18 @@ const Profile = () => {
 
   const { user, createdEvents, joinedEvents } = data;
 
-  // Manejo de eliminación de eventos
+  // ✅ Manejo de eliminación de eventos
   const handleDeleteEvent = async (eventId) => {
     try {
       await axiosInstance.delete(`/events/${eventId}`);
-      setData((prev) => ({
-        ...prev,
-        createdEvents: prev.createdEvents.filter((event) => event._id !== eventId),
-      }));
+
+      if (setData) {
+        setData((prev) => ({
+          ...prev,
+          createdEvents: prev.createdEvents.filter((event) => event._id !== eventId),
+        }));
+      }
+
       alert('Evento eliminado correctamente.');
     } catch (error) {
       console.error('❌ Error al eliminar el evento:', error);
@@ -33,14 +37,18 @@ const Profile = () => {
     }
   };
 
-  // Manejo de salida de eventos
+  // ✅ Manejo de salida de eventos
   const handleLeaveEvent = async (eventId) => {
     try {
       await axiosInstance.post(`/events/${eventId}/leave`);
-      setData((prev) => ({
-        ...prev,
-        joinedEvents: prev.joinedEvents.filter((event) => event._id !== eventId),
-      }));
+
+      if (setData) {
+        setData((prev) => ({
+          ...prev,
+          joinedEvents: prev.joinedEvents.filter((event) => event._id !== eventId),
+        }));
+      }
+
       alert('Has salido del evento.');
     } catch (error) {
       console.error('❌ Error al salir del evento:', error);
