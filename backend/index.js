@@ -1,39 +1,39 @@
-const express = require('express');
-const dotenv = require('dotenv');
-const cors = require('cors');
-const connectDB = require('./config/db');
-const authRoutes = require('./routes/authRoutes');
-const eventRoutes = require('./routes/eventRoutes');
-const path = require('path');
+const express = require('express')
+const dotenv = require('dotenv')
+const cors = require('cors')
+const connectDB = require('./config/db')
+const authRoutes = require('./routes/authRoutes')
+const eventRoutes = require('./routes/eventRoutes')
+const path = require('path')
 
+// Cargar variables de entorno
+dotenv.config()
 
-dotenv.config();
+// Conectar a la base de datos
+connectDB()
 
+const app = express()
 
-connectDB();
+// Middleware para permitir solicitudes desde el frontend
+app.use(cors())
 
-const app = express();
+// Middleware para parsear JSON en las peticiones
+app.use(express.json())
 
+// Servir archivos estáticos desde la carpeta "uploads"
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
-app.use(cors());
+// Rutas
+app.use('/api/auth', authRoutes)
+app.use('/api/events', eventRoutes)
 
-
-app.use(express.json());
-
-
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-
-app.use('/api/auth', authRoutes);
-app.use('/api/events', eventRoutes);
-
-
+// Ruta por defecto
 app.get('/', (req, res) => {
-  res.send('🚀 API de Eventastic corriendo correctamente...');
-});
+  res.send('🚀 API de Eventastic corriendo correctamente...')
+})
 
-
-const PORT = process.env.PORT || 5001;
+// Escuchar en el puerto especificado
+const PORT = process.env.PORT || 5001
 app.listen(PORT, () => {
-  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
-});
+  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`)
+})

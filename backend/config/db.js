@@ -1,13 +1,20 @@
 const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+
+dotenv.config(); // Cargar variables de entorno desde .env
 
 const connectDB = async () => {
   try {
-    const mongoURI = process.env.NODE_ENV === 'production'
-      ? process.env.MONGO_URI // Usa la base de datos en la nube en producción
-      : 'mongodb://localhost:27017/eventastic'; // Usa la base de datos local en desarrollo
+    const dbURI = process.env.NODE_ENV === 'production'
+      ? process.env.MONGO_URI  // Producción: Conectar a Mongo Atlas
+      : 'mongodb://localhost:27017/eventastic'; // Local
 
-    await mongoose.connect(mongoURI);
-    console.log(`✅ Conectado a MongoDB: ${mongoURI}`);
+    await mongoose.connect(dbURI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    });
+
+    console.log(`✅ Conectado a MongoDB en ${dbURI}`);
   } catch (error) {
     console.error('❌ Error al conectar MongoDB:', error);
     process.exit(1);

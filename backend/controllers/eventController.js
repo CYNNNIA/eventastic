@@ -16,21 +16,25 @@ const getEvents = async (req, res) => {
 const createEvent = async (req, res) => {
   try {
     console.log('📢 Datos recibidos en el backend:', req.body);
-    console.log('📸 Archivo recibido:', req.file);
-    console.log('🔑 Usuario autenticado:', req.user);
 
     const { title, description, date, location } = req.body;
-    const createdBy = req.user ? req.user.id : null; 
+    const createdBy = req.user ? req.user.id : null;
 
     if (!title || !description || !date || !location || !createdBy) {
       console.error('🚨 Datos faltantes:', { title, description, date, location, createdBy });
       return res.status(400).json({ msg: 'Todos los campos son obligatorios' });
     }
 
+    // Convertir la fecha a un objeto Date válido
+    const formattedDate = new Date(date);
+    if (isNaN(formattedDate.getTime())) {
+      return res.status(400).json({ msg: 'Fecha inválida, revisa el formato (YYYY-MM-DD)' });
+    }
+
     const newEvent = new Event({
       title,
       description,
-      date: new Date(date),
+      date: formattedDate, // Guardamos la fecha correctamente formateada
       location,
       createdBy,
       attendees: [],
