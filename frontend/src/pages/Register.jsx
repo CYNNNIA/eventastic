@@ -100,7 +100,7 @@ const Register = () => {
         </div>
         <button type='submit'>
           {loading ? (
-            <div className='spinner'></div> // Mostrar el spinner si está cargando
+            <div className='spinner'></div> 
           ) : (
             'Registrarse'
           )}

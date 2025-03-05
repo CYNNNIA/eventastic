@@ -26,7 +26,7 @@
   margin-left: 10px;
 }
 
-/* Animación del Gradiente del Logo */
+
 @keyframes gradientAnimation {
   0% {
     background-position: 0% 50%;
@@ -39,7 +39,7 @@
   }
 }
 
-/* Botón de hamburguesa */
+
 .navbar-toggle {
   display: none; 
   flex-direction: column;
@@ -64,7 +64,7 @@
   transition: all 0.3s ease;
 }
 
-/* Contenedor de enlaces de navegación */
+
 .navbar-links {
   display: flex;
   gap: 15px;
@@ -73,7 +73,7 @@
   margin-right: 10px;
 }
 
-/* Links de la Navbar */
+
 .navbar-tab {
   color: #fff;
   text-decoration: none;
@@ -109,7 +109,6 @@
   opacity: 1;
 }
 
-/* Botón de Cerrar Sesión */
 .logout-btn {
   background: linear-gradient(135deg, #d32f2f, #b71c1c);
   color: #fff;
@@ -129,14 +128,12 @@
   transform: translateY(-3px);
 }
 
-/* Para las versiones móviles */
 @media (max-width: 968px) {
   
   .navbar-toggle {
     display: flex; 
   }
 
-  /* Menu en versión móvil */
   .navbar-links {
     flex-direction: column;
     gap: 10px;
@@ -150,12 +147,11 @@
     display: none; 
   }
 
-  /* Mostrar el menú cuando esté activo */
   .navbar-links.active {
     display: flex;
   }
 
-  /* Estilo de los botones en la navbar para móviles */
+
   .navbar-tab,
   .logout-btn {
     font-size: 0.8rem;
@@ -163,7 +159,7 @@
     width: 50%; 
   }
 
-  /* Ajustar el botón de cerrar sesión para dispositivos móviles */
+
   .logout-btn {
     font-size: 0.6rem;
     max-width: none; 

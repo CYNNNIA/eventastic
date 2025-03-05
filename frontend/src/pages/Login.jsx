@@ -8,13 +8,13 @@ const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false) // Estado para el spinner
+  const [loading, setLoading] = useState(false) 
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
-    setLoading(true) // Mostrar el spinner cuando se envía el formulario
+    setLoading(true) 
 
     try {
       const { data } = await axios.post(
@@ -23,7 +23,7 @@ const Login = () => {
       )
 
       localStorage.setItem('token', data.token)
-      navigate('/events') // Redirige al usuario a la página de eventos
+      navigate('/events') 
     } catch (err) {
       console.error(
         'Error al iniciar sesión:',
@@ -39,7 +39,7 @@ const Login = () => {
         setError('Error al iniciar sesión. Inténtalo nuevamente.')
       }
     } finally {
-      setLoading(false) // Ocultar el spinner después de la respuesta
+      setLoading(false) 
     }
   }
 
@@ -66,7 +66,7 @@ const Login = () => {
         {error && <p className='login-error'>{error}</p>}
         <button type='submit' className='login-button'>
           {loading ? (
-            <div className='spinner'></div> // Mostrar el spinner si está cargando
+            <div className='spinner'></div> 
           ) : (
             'Iniciar sesión'
           )}

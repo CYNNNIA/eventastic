@@ -6,7 +6,7 @@ import '../styles/Profile.css';
 
 const Profile = () => {
   const navigate = useNavigate();
-  const { data, loading, error, setData } = useFetch('/auth/me'); // ✅ setData ahora está disponible
+  const { data, loading, error, setData } = useFetch('/auth/me'); 
 
   if (loading) return <p>Cargando perfil...</p>;
   if (error) return <p>Error al cargar el perfil.</p>;
@@ -18,7 +18,7 @@ const Profile = () => {
 
   const { user, createdEvents, joinedEvents } = data;
 
-  // ✅ Manejo de eliminación de eventos
+
   const handleDeleteEvent = async (eventId) => {
     try {
       await axiosInstance.delete(`/events/${eventId}`);
@@ -37,7 +37,7 @@ const Profile = () => {
     }
   };
 
-  // ✅ Manejo de salida de eventos
+
   const handleLeaveEvent = async (eventId) => {
     try {
       await axiosInstance.post(`/events/${eventId}/leave`);

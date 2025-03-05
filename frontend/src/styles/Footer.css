@@ -16,7 +16,7 @@ footer {
   box-sizing: border-box;
 }
 
-/* Contenido del Footer */
+
 .footer-content {
   display: flex;
   justify-content: space-between;
@@ -25,7 +25,7 @@ footer {
   gap: 2px;
 }
 
-/* Sección individual del footer */
+
 .footer-section {
   flex: 1;
   text-align: center;
@@ -34,7 +34,7 @@ footer {
 }
 
 .footer-section h3 {
-  display: none; /* Ocultar encabezados */
+  display: none; 
 }
 
 .footer-section p {
@@ -44,7 +44,7 @@ footer {
   word-break: break-word;
 }
 
-/* Ajustes responsivos para móviles */
+
 @media (max-width: 768px) {
   footer {
     padding: 1px 2px;
@@ -77,7 +77,7 @@ footer {
   }
 }
 
-/* Ajustes para pantallas muy pequeñas */
+
 @media (max-width: 480px) {
   footer {
     padding: 1px;

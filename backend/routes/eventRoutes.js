@@ -13,7 +13,7 @@ const path = require('path');
 
 const router = express.Router();
 
-// Configurar almacenamiento de imágenes con Multer
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, path.join(__dirname, '../uploads'));

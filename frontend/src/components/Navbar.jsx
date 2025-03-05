@@ -15,17 +15,17 @@ const Navbar = () => {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem('token') // Elimina el token del almacenamiento local
-    navigate('/login') // Redirige al usuario a la página de inicio de sesión
+    localStorage.removeItem('token') /
+    navigate('/login') 
     closeMenu()
   }
 
   const handleProfileClick = () => {
-    const token = localStorage.getItem('token') // Verifica si hay un token en el almacenamiento local
+    const token = localStorage.getItem('token') 
     if (!token) {
-      navigate('/login') // Si no hay token, redirige a la página de inicio de sesión
+      navigate('/login') 
     } else {
-      navigate('/profile') // Si hay token, redirige al perfil del usuario
+      navigate('/profile') 
     }
     closeMenu()
   }

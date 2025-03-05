@@ -7,7 +7,7 @@ const useFetch = (url, options = {}) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    let isMounted = true; // Evitar actualizaciones en componentes desmontados
+    let isMounted = true; 
 
     const fetchData = async () => {
       setLoading(true);

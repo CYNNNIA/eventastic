@@ -52,7 +52,7 @@ const EventDetails = () => {
       const { data } = await axiosInstance.post(`/events/${id}/leave`);
       setIsUserJoined(false);
       setEvent(data.event);
-      alert(data.msg); // Muestra mensaje de éxito
+      alert(data.msg); 
     } catch (error) {
       console.error('Error al salir del evento:', error);
       alert(error.response?.data?.msg || 'Error al salir del evento');
