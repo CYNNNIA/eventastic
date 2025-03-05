@@ -4,8 +4,8 @@ import { jwtDecode } from 'jwt-decode'
 const axiosInstance = axios.create({
   baseURL:
     process.env.NODE_ENV === 'production'
-      ? 'https://eventastic-production.up.railway.app/api' 
-      : 'http://localhost:5001/api', 
+      ? 'https://eventastic-production.up.railway.app/api' // Forzamos HTTPS en producción
+      : 'http://localhost:5001/api', // En local sigue con HTTP
   headers: {
     'Content-Type': 'application/json',
   },
