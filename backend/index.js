@@ -1,43 +1,29 @@
-const express = require('express')
-const dotenv = require('dotenv')
-const cors = require('cors')
-const connectDB = require('./config/db')
-const authRoutes = require('./routes/authRoutes')
-const eventRoutes = require('./routes/eventRoutes')
-const path = require('path')
+const express = require('express');
+const dotenv = require('dotenv');
+const cors = require('cors');
+const connectDB = require('./config/db');
+const authRoutes = require('./routes/authRoutes');
+const eventRoutes = require('./routes/eventRoutes');
+const path = require('path');
 
-// Cargar variables de entorno
-dotenv.config()
+dotenv.config();
+connectDB();
 
-// Conectar a la base de datos
-connectDB()
+const app = express();
 
-const app = express()
+app.use(cors());
+app.use(express.json());
 
-// Middleware para permitir solicitudes desde el frontend
-const corsOptions = {
-  origin: ['https://eventastic-git-main-cynns-projects.vercel.app', 'https://eventastic-iota.vercel.app'],
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  credentials: true,
-};
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-app.use(cors(corsOptions));
-// Middleware para parsear JSON en las peticiones
-app.use(express.json())
+// ✅ Asegúrate de que `eventRoutes` tiene el prefijo `/api`
+app.use('/api/auth', authRoutes);
+app.use('/api/events', eventRoutes); // ✅ Debe incluir `/api`
 
-// Servir archivos estáticos desde la carpeta "uploads"
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
-
-// Rutas
-app.use('/api/auth', authRoutes)
-app.use('/api/events', eventRoutes)
-
-// Ruta por defecto
 app.get('/', (req, res) => {
-  res.send('🚀 API de Eventastic corriendo correctamente...')
-})
+  res.send('🚀 API de Eventastic corriendo correctamente...');
+});
 
-// Escuchar en el puerto especificado
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en el puerto ${PORT}`);

@@ -20,16 +20,12 @@ const Events = () => {
 
   const fetchEvents = async () => {
     try {
-      const { data } = await axiosInstance.get('/api/events'); // ✅ Esto apunta bien al backend
-      console.log('📢 Eventos recibidos en el frontend:', data) // Agregar log
-      setEvents(data)
-      setLoading(false)
+      const { data } = await axiosInstance.get('/api/events'); // ✅ Incluye `/api`
+      setEvents(data);
     } catch (err) {
-      console.error('❌ Error al cargar los eventos:', err)
-      setError('Error al cargar los eventos.')
-      setLoading(false)
+      console.error('❌ Error al cargar los eventos:', err);
     }
-  }
+  };
 
   const handleJoinEvent = async (eventId) => {
     setLoadingAction(true)
