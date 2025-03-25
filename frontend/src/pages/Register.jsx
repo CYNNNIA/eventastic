@@ -10,7 +10,7 @@ const Register = () => {
   const [password, setPassword] = useState('')
   const [avatar, setAvatar] = useState(null)
   const [error, setError] = useState(null)
-  const [loading, setLoading] = useState(false) 
+  const [loading, setLoading] = useState(false) // Estado para el spinner
   const navigate = useNavigate()
 
   const handleFileChange = (e) => {
@@ -28,7 +28,8 @@ const Register = () => {
       formData.append('avatar', avatar)
     }
 
-    setLoading(true) 
+    setLoading(true) // Mostrar el spinner cuando se envía el formulario
+
     try {
       const { data } = await axios.post(
         'http://localhost:5001/api/auth/register',
@@ -42,7 +43,7 @@ const Register = () => {
 
       localStorage.setItem('token', data.token)
       alert('Registro exitoso')
-      navigate('/events') 
+      navigate('/events') // Redirige al usuario a la página de eventos
     } catch (err) {
       console.error(err.response?.data || err.message)
       const backendMessage = err.response?.data?.message
@@ -53,7 +54,7 @@ const Register = () => {
         setError(backendMessage || 'Error al registrarse. Inténtalo de nuevo.')
       }
     } finally {
-      setLoading(false) 
+      setLoading(false) // Ocultar el spinner después de la respuesta
     }
   }
 

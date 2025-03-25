@@ -40,7 +40,7 @@ const EventDetails = () => {
       const { data } = await axiosInstance.post(`/events/${id}/join`);
       setIsUserJoined(true);
       setEvent(data.event);
-      alert(data.msg); 
+      alert(data.msg); // Muestra mensaje de éxito
     } catch (error) {
       console.error('Error al unirse al evento:', error);
       alert(error.response?.data?.msg || 'Error al unirse al evento');

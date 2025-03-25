@@ -1,13 +1,13 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 
-dotenv.config();
+dotenv.config(); // Cargar variables de entorno desde .env
 
 const connectDB = async () => {
   try {
     const dbURI = process.env.NODE_ENV === 'production'
-      ? process.env.MONGO_URI  
-      : 'mongodb://localhost:27017/eventastic';
+      ? process.env.MONGO_URI  // Producción: Conectar a Mongo Atlas
+      : 'mongodb://localhost:27017/eventastic'; // Local
 
     await mongoose.connect(dbURI, {
       useNewUrlParser: true,

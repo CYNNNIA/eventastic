@@ -79,7 +79,7 @@ async function run() {
             location: event.location,
             createdBy: new ObjectId(),
             attendees: [],
-            image: localImagePath 
+            image: localImagePath // Ruta de la imagen guardada en 'uploads'
           }
         })
       )
@@ -89,7 +89,7 @@ async function run() {
       console.log(`📥 ${formattedEvents.length} eventos importados correctamente`)
     }
 
-   
+    // 📥 Insertar reservas
     if (reservas.length) {
       await reservationsCollection.insertMany(reservas)
       console.log(`📥 ${reservas.length} reservas importadas`)
