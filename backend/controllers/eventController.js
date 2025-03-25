@@ -34,7 +34,7 @@ const createEvent = async (req, res) => {
     const newEvent = new Event({
       title,
       description,
-      date: formattedDate, // Guardamos la fecha correctamente formateada
+      date: formattedDate, 
       location,
       createdBy,
       attendees: [],

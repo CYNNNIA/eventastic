@@ -14,7 +14,7 @@ const app = express();
 app.use(cors({
   origin: [
     'http://localhost:3000',
-    'https://eventastic-two.vercel.app' // ← este es el que importa ahora
+    'https://eventastic-two.vercel.app' 
   ],
   credentials: true
 }));
@@ -22,9 +22,8 @@ app.use(express.json());
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// ✅ Asegúrate de que `eventRoutes` tiene el prefijo `/api`
 app.use('/api/auth', authRoutes);
-app.use('/api/events', eventRoutes); // ✅ Debe incluir `/api`
+app.use('/api/events', eventRoutes); 
 
 app.get('/', (req, res) => {
   res.send('🚀 API de Eventastic corriendo correctamente...');

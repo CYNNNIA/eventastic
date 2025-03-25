@@ -20,7 +20,7 @@ const Events = () => {
 
   const fetchEvents = async () => {
     try {
-      const { data } = await axiosInstance.get('/api/events'); // ✅ Incluye `/api`
+      const { data } = await axiosInstance.get('/api/events');
       setEvents(data);
     } catch (err) {
       console.error('❌ Error al cargar los eventos:', err);
@@ -46,7 +46,7 @@ const Events = () => {
     try {
       const { data } = await axiosInstance.post(`/events/${eventId}/leave`)
       alert(data.msg || 'Has salido del evento con éxito.')
-      fetchEvents() // Refrescar los eventos tras salir
+      fetchEvents() 
     } catch (err) {
       const errorMsg = err.response?.data?.msg || 'Error al salir del evento.'
       alert(errorMsg)
