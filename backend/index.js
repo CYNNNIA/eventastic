@@ -11,7 +11,13 @@ connectDB();
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:3000',
+    'https://eventastic-two.vercel.app' // ← este es el que importa ahora
+  ],
+  credentials: true
+}));
 app.use(express.json());
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
