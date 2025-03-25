@@ -1,15 +1,13 @@
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 
-
 const axiosInstance = axios.create({
   baseURL:
     process.env.NODE_ENV === 'production'
-      ? 'https://eventastic-production.up.railway.app/api'  // ✅ URL con `/api`
-      : 'http://localhost:5001/api',  // ✅ URL en local con `/api`
+      ? process.env.REACT_APP_API_URL  // ✅ Cogerá el valor de Vercel
+      : 'http://localhost:5001/api',    // ✅ En local, se conecta al backend local
   headers: { 'Content-Type': 'application/json' },
 });
-
 
 // Interceptor para adjuntar el token en cada solicitud
 axiosInstance.interceptors.request.use(
