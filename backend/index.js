@@ -16,9 +16,9 @@ app.use(express.json());
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// ✅ Asegúrate de que `eventRoutes` tiene el prefijo `/api`
-app.use('/api/auth', authRoutes);
-app.use('/api/events', eventRoutes); // ✅ Debe incluir `/api`
+// ✅ Asegúrate de que la ruta '/api' esté bien configurada
+app.use('/api/auth', authRoutes);  // Asegúrate de que esté correctamente prefijada
+app.use('/api/events', eventRoutes); // Asegúrate de que esté correctamente prefijada
 
 app.get('/', (req, res) => {
   res.send('🚀 API de Eventastic corriendo correctamente...');
