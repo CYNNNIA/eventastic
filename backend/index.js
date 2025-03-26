@@ -11,20 +11,14 @@ connectDB();
 
 const app = express();
 
-app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'https://eventastic-two.vercel.app' // ← este es el que importa ahora
-  ],
-  credentials: true
-}));
+app.use(cors());
 app.use(express.json());
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// ✅ Asegúrate de que la ruta '/api' esté bien configurada
-app.use('/api/auth', authRoutes);  // Asegúrate de que esté correctamente prefijada
-app.use('/api/events', eventRoutes); // Asegúrate de que esté correctamente prefijada
+// Las rutas deben incluir /api
+app.use('/api/auth', authRoutes);
+app.use('/api/events', eventRoutes); // Asegúrate que el prefijo /api está en todas las rutas.
 
 app.get('/', (req, res) => {
   res.send('🚀 API de Eventastic corriendo correctamente...');

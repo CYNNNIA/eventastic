@@ -20,12 +20,12 @@ const Events = () => {
 
   const fetchEvents = async () => {
     try {
-      const { data } = await axiosInstance.get('/events'); // Ahora /events, sin /api otra vez
+      const { data } = await axiosInstance.get('/events');
       setEvents(data);
+      setLoading(false);
     } catch (err) {
-      console.error('❌ Error al cargar los eventos:', err);
       setError('Error al cargar los eventos.');
-    } finally {
+      console.error('Error al cargar los eventos:', err);
       setLoading(false);
     }
   };
@@ -33,25 +33,36 @@ const Events = () => {
   const handleJoinEvent = async (eventId) => {
     setLoadingAction(true);
     try {
-      const { data } = await axiosInstance.post(`/api/events/${eventId}/join`);  // Asegúrate de incluir `/api`
+      const { data } = await axiosInstance.post(`/events/${eventId}/join`);
       alert(data.msg || 'Te has unido al evento con éxito.');
-      fetchEvents(); // Refrescar los eventos tras unirse
+      // Actualizar el evento después de unirse
+      setEvents(prevEvents =>
+        prevEvents.map(event =>
+          event._id === eventId ? { ...event, attendees: [...event.attendees, userId] } : event
+        )
+      );
     } catch (err) {
-      const errorMsg = err.response?.data?.msg || 'Error al unirse al evento.';
-      alert(errorMsg);
+      alert(err.response?.data?.msg || 'Error al unirse al evento.');
     } finally {
       setLoadingAction(false);
     }
   };
 
   const handleLeaveEvent = async (eventId) => {
+    setLoadingAction(true);
     try {
-      const { data } = await axiosInstance.post(`/api/events/${eventId}/leave`);
+      const { data } = await axiosInstance.post(`/events/${eventId}/leave`);
       alert(data.msg || 'Has salido del evento con éxito.');
-      fetchEvents(); // Refrescar los eventos tras salir
+      // Actualizar el evento después de salir
+      setEvents(prevEvents =>
+        prevEvents.map(event =>
+          event._id === eventId ? { ...event, attendees: event.attendees.filter(att => att !== userId) } : event
+        )
+      );
     } catch (err) {
-      const errorMsg = err.response?.data?.msg || 'Error al salir del evento.';
-      alert(errorMsg);
+      alert(err.response?.data?.msg || 'Error al salir del evento.');
+    } finally {
+      setLoadingAction(false);
     }
   };
 
@@ -59,46 +70,46 @@ const Events = () => {
   if (error) return <p>{error}</p>;
 
   return (
-    <div className="events-container">
-      <h1 className="events-title">Lista de Eventos</h1>
+    <div className='events-container'>
+      <h1 className='events-title'>Lista de Eventos</h1>
       {events.length === 0 ? (
         <p>No hay eventos disponibles.</p>
       ) : (
-        <div className="events-grid">
+        <div className='events-grid'>
           {events.map((event) => {
             const isUserJoined = event.attendees?.includes(userId);
 
             return (
-              <div key={event._id} className="event-card">
+              <div key={event._id} className='event-card'>
                 {event.image && (
                   <img
-                    src={`http://localhost:5001${event.image}`} // Asegúrate de que la URL sea correcta
+                    src={`http://localhost:5001${event.image}`}
                     alt={event.title}
-                    className="event-image"
+                    className='event-image'
                   />
                 )}
-                <div className="event-content">
+                <div className='event-content'>
                   <h3>{event.title}</h3>
                   <p>{event.description}</p>
                   <p>Fecha: {new Date(event.date).toLocaleDateString()}</p>
                   <p>Ubicación: {event.location}</p>
                 </div>
-                <div className="event-buttons">
+                <div className='event-buttons'>
                   <button onClick={() => navigate(`/events/${event._id}`)}>
-                    <i className="fas fa-info-circle"></i> Más detalles
+                    <i className='fas fa-info-circle'></i> Más detalles
                   </button>
 
                   {isUserJoined ? (
                     <button
                       onClick={() => handleLeaveEvent(event._id)}
                       disabled={loadingAction}
-                      className="leave-button"
+                      className='leave-button'
                     >
                       {loadingAction ? (
                         'Cargando...'
                       ) : (
                         <>
-                          <i className="fas fa-sign-out-alt"></i> Salir
+                          <i className='fas fa-sign-out-alt'></i> Salir
                         </>
                       )}
                     </button>
@@ -106,13 +117,13 @@ const Events = () => {
                     <button
                       onClick={() => handleJoinEvent(event._id)}
                       disabled={loadingAction}
-                      className="join-button"
+                      className='join-button'
                     >
                       {loadingAction ? (
                         'Cargando...'
                       ) : (
                         <>
-                          <i className="fas fa-sign-in-alt"></i> Unirse
+                          <i className='fas fa-sign-in-alt'></i> Unirse
                         </>
                       )}
                     </button>

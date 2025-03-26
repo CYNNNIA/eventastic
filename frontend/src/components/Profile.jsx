@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useFetch from '../utils/useFetch';
 import axiosInstance from '../api/axiosInstance';
@@ -6,7 +6,17 @@ import '../styles/Profile.css';
 
 const Profile = () => {
   const navigate = useNavigate();
-  const { data, loading, error, setData } = useFetch('/auth/me'); 
+  const { data, loading, error } = useFetch('/auth/me');
+  
+  const [createdEvents, setCreatedEvents] = useState([]);
+  const [joinedEvents, setJoinedEvents] = useState([]);
+
+  useEffect(() => {
+    if (data) {
+      setCreatedEvents(data.createdEvents);
+      setJoinedEvents(data.joinedEvents);
+    }
+  }, [data]);
 
   if (loading) return <p>Cargando perfil...</p>;
   if (error) return <p>Error al cargar el perfil.</p>;
@@ -16,19 +26,15 @@ const Profile = () => {
     return null;
   }
 
-  const { user, createdEvents, joinedEvents } = data;
+  const { user } = data;
 
-
+  // Función para eliminar evento
   const handleDeleteEvent = async (eventId) => {
     try {
       await axiosInstance.delete(`/events/${eventId}`);
 
-      if (setData) {
-        setData((prev) => ({
-          ...prev,
-          createdEvents: prev.createdEvents.filter((event) => event._id !== eventId),
-        }));
-      }
+      // Actualiza el estado de createdEvents en el frontend sin recargar la página
+      setCreatedEvents(prev => prev.filter((event) => event._id !== eventId));
 
       alert('Evento eliminado correctamente.');
     } catch (error) {
@@ -37,17 +43,13 @@ const Profile = () => {
     }
   };
 
-
+  // Función para salir del evento
   const handleLeaveEvent = async (eventId) => {
     try {
       await axiosInstance.post(`/events/${eventId}/leave`);
 
-      if (setData) {
-        setData((prev) => ({
-          ...prev,
-          joinedEvents: prev.joinedEvents.filter((event) => event._id !== eventId),
-        }));
-      }
+      // Actualiza el estado de joinedEvents en el frontend sin recargar la página
+      setJoinedEvents(prev => prev.filter((event) => event._id !== eventId));
 
       alert('Has salido del evento.');
     } catch (error) {
