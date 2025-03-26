@@ -17,7 +17,7 @@ app.use(cors({
     'http://localhost:3000',        // Permitir localhost en desarrollo
     'https://eventastic-two.vercel.app' // Permitir Vercel en producción
   ],
-  credentials: true, // Asegúrate de permitir cookies o encabezados de autorización si los estás utilizando
+  credentials: true, // Permitir cookies o encabezados de autorización si los estás utilizando
 }));
 
 app.use(express.json());
@@ -26,7 +26,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Las rutas deben incluir /api
 app.use('/api/auth', authRoutes);
-app.use('/api/events', eventRoutes);
+app.use('/api/events', eventRoutes); // Asegúrate que el prefijo /api está en todas las rutas.
 
 app.get('/', (req, res) => {
   res.send('🚀 API de Eventastic corriendo correctamente...');
