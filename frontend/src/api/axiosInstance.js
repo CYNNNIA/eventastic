@@ -3,8 +3,8 @@ import axios from 'axios';
 const axiosInstance = axios.create({
   baseURL:
     process.env.NODE_ENV === 'production'
-      ? 'https://eventastic-1.onrender.com/api'  // Backend en Render en producción
-      : 'http://localhost:5001/api',   // URL local para desarrollo
+      ? 'https://eventastic-1.onrender.com/api'  // URL en producción en Render
+      : 'http://localhost:5001/api',   // URL en desarrollo local
   headers: { 'Content-Type': 'application/json' },
 });
 
