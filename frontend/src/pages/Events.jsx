@@ -20,7 +20,7 @@ const Events = () => {
 
   const fetchEvents = async () => {
     try {
-      const { data } = await axiosInstance.get('/events');
+      const { data } = await axiosInstance.get('/events'); // Se hace la petición GET
       setEvents(data);
       setLoading(false);
     } catch (err) {
