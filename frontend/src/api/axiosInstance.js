@@ -1,13 +1,11 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: process.env.NODE_ENV === 'production'
-    ? 'https://eventastic-1.onrender.com/api' // Backend en Render en producción
-    : 'http://localhost:5001/api',   // URL local para desarrollo
+  baseURL: process.env.REACT_APP_API_URL, // Usamos la variable de entorno
   headers: { 'Content-Type': 'application/json' },
 });
 
-// Interceptor para adjuntar el token en cada solicitud
+// Interceptor para agregar el token en cada solicitud
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');

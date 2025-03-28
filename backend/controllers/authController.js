@@ -95,9 +95,7 @@ const getMe = async (req, res) => {
   }
 };
 
-
-
-
+// Actualizar avatar
 const updateAvatar = async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
