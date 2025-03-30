@@ -34,6 +34,7 @@ app.use('/api/events', eventRoutes); // Asegúrate que el prefijo /api está en 
 app.get('/', (req, res) => {
   res.send('🚀 API de Eventastic corriendo correctamente...');
 });
+console.log(`Puerto en producción: ${process.env.PORT}`);
 
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
