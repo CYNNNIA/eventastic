@@ -10,11 +10,12 @@ const useFetch = (url) => {
     const fetchData = async () => {
       try {
         const response = await axiosInstance.get(url);
-        setData(response.data);  // Actualiza el estado con los datos obtenidos
+        console.log('Datos obtenidos:', response.data); // Verifica los datos recibidos
+        setData(response.data);
       } catch (err) {
-        setError('Error al cargar los datos');  // Maneja el error en la solicitud
+        setError('Error al cargar los datos');
       } finally {
-        setLoading(false);  // Siempre cambia el estado de loading a false
+        setLoading(false);
       }
     };
 

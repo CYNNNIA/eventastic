@@ -11,9 +11,9 @@ const axiosInstance = axios.create({
 // Interceptor para añadir el token a las cabeceras de cada solicitud
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');  // Obtener el token del localStorage
+    const token = localStorage.getItem('token');
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;  // Añadir el token a las cabeceras de la solicitud
+      config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },

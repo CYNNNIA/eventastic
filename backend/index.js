@@ -15,9 +15,9 @@ const app = express();
 const corsOptions = {
   origin: [
     'http://localhost:3000',  // Permitir localhost en desarrollo
-    'https://eventastic-1.onrender.com',  // Permitir Vercel en producción
+    'https://eventastic-two.vercel.app',  // Permitir Vercel en producción
   ],
-  credentials: true,  // Permitir cookies o encabezados de autorización si se están usando
+  credentials: true,  // Permitir cookies o encabezados de autorización
 };
 app.use(cors(corsOptions));
 

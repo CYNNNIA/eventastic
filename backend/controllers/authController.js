@@ -72,9 +72,10 @@ const login = async (req, res) => {
 };
 
 // Obtener usuario autenticado
+// Obtener usuario autenticado
 const getMe = async (req, res) => {
   try {
-    console.log('✅ Usuario autenticado:', req.user);
+    console.log('✅ Usuario autenticado:', req.user); // Confirma que req.user contiene los datos del usuario
 
     if (!req.user) {
       return res.status(401).json({ msg: 'No autorizado, usuario no encontrado' });
@@ -85,7 +86,7 @@ const getMe = async (req, res) => {
     const joinedEvents = await Event.find({ attendees: req.user.id });
 
     res.status(200).json({
-      user: req.user,
+      user: req.user,  // Asegúrate de devolver todos los datos necesarios del usuario
       createdEvents,
       joinedEvents,
     });
@@ -119,7 +120,9 @@ const updateAvatar = async (req, res) => {
 
 // Verificar si el token ha caducado
 const verifyToken = (req, res, next) => {
-  const token = req.header('Authorization')?.replace('Bearer ', '');
+  const token = req.header('Authorization')?.replace('Bearer ', ''); // El token debe ser enviado en la cabecera Authorization
+
+  console.log('Token recibido:', token); // Log para verificar que el token está llegando
 
   if (!token) {
     return res.status(401).json({ msg: 'Token no proporcionado' });

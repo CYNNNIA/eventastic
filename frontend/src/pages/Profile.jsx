@@ -18,6 +18,8 @@ const Profile = () => {
 
   const { user, createdEvents, joinedEvents } = data;
 
+  console.log('Datos del usuario:', user); // Verifica que los datos del usuario estén presentes
+
   // Función para eliminar evento
   const handleDeleteEvent = async (eventId) => {
     try {
@@ -68,8 +70,8 @@ const Profile = () => {
           className='profile-avatar'
         />
       )}
-      <p><strong>Nombre:</strong> {user.name}</p>
-      <p><strong>Email:</strong> {user.email}</p>
+      <p><strong>Nombre:</strong> {user.name}</p> {/* Verifica que user.name esté accesible */}
+      <p><strong>Email:</strong> {user.email}</p> {/* Verifica que user.email esté accesible */}
 
       <h2>Eventos Creados</h2>
       {createdEvents.length === 0 ? (

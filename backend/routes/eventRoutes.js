@@ -7,7 +7,7 @@ const {
   leaveEvent,
   deleteEvent
 } = require('../controllers/eventController');
-const { protect } = require('../middlewares/authMiddleware');
+const { verifyToken } = require('../controllers/authController');  // Importamos el middleware para verificar el token
 const multer = require('multer');
 const path = require('path');
 
@@ -23,11 +23,12 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
+// Rutas de eventos
 router.get('/', getEvents);
-router.post('/', protect, upload.single('image'), createEvent);
+router.post('/', verifyToken, upload.single('image'), createEvent);  // Proteger la creación de eventos
 router.get('/:id', getEventById);
-router.post('/:id/join', protect, joinEvent);
-router.post('/:id/leave', protect, leaveEvent);
-router.delete('/:id', protect, deleteEvent);
+router.post('/:id/join', verifyToken, joinEvent);  // Proteger la inscripción en eventos
+router.post('/:id/leave', verifyToken, leaveEvent);  // Proteger la salida de eventos
+router.delete('/:id', verifyToken, deleteEvent);  // Proteger la eliminación de eventos
 
 module.exports = router;
