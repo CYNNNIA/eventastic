@@ -1,13 +1,17 @@
 const express = require('express');
-const { register, login, getMe, updateAvatar } = require('../controllers/authController');
-const { protect } = require('../middlewares/authMiddleware');
-const upload = require('../middlewares/fileUpload');
-
+const { register, login, getMe, updateAvatar, verifyToken } = require('../controllers/authController');
 const router = express.Router();
 
-router.post('/register', upload.single('avatar'), register);
+// Ruta para obtener el perfil del usuario (requiere token)
+router.get('/me', verifyToken, getMe);  // Aquí usamos verifyToken para proteger la ruta
+
+// Ruta para registrar un nuevo usuario
+router.post('/register', register);
+
+// Ruta para login de usuario
 router.post('/login', login);
-router.get('/me', protect, getMe);  // Asegúrate de que la ruta está correctamente definida
-router.put('/me/avatar', protect, upload.single('avatar'), updateAvatar);
+
+// Ruta para actualizar el avatar del usuario (requiere token)
+router.post('/avatar', verifyToken, updateAvatar);
 
 module.exports = router;

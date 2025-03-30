@@ -18,6 +18,8 @@ const corsOptions = {
     'https://eventastic-1.onrender.com',  // Permitir Vercel en producción
   ],
   credentials: true,  // Permitir cookies o encabezados de autorización si se están usando
+  allowedHeaders: ['Content-Type', 'Authorization'], // Asegura que los encabezados correctos sean aceptados
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],  // Permitir los métodos necesarios
 };
 
 app.use(cors(corsOptions));

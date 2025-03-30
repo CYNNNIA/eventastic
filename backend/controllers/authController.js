@@ -71,8 +71,7 @@ const login = async (req, res) => {
   }
 };
 
-// Obtener usuario autenticado
-// Obtener usuario autenticado
+
 const getMe = async (req, res) => {
   try {
     console.log('✅ Usuario autenticado:', req.user); // Confirma que req.user contiene los datos del usuario
@@ -81,12 +80,12 @@ const getMe = async (req, res) => {
       return res.status(401).json({ msg: 'No autorizado, usuario no encontrado' });
     }
 
-    // Obtener eventos creados y a los que se ha unido
+    
     const createdEvents = await Event.find({ createdBy: req.user.id });
     const joinedEvents = await Event.find({ attendees: req.user.id });
 
     res.status(200).json({
-      user: req.user,  // Asegúrate de devolver todos los datos necesarios del usuario
+      user: req.user, 
       createdEvents,
       joinedEvents,
     });
@@ -118,20 +117,19 @@ const updateAvatar = async (req, res) => {
   }
 };
 
-// Verificar si el token ha caducado
+
 const verifyToken = (req, res, next) => {
-  const token = req.header('Authorization')?.replace('Bearer ', ''); // El token debe ser enviado en la cabecera Authorization
+  const token = req.header('Authorization')?.replace('Bearer ', ''); 
 
-  console.log('Token recibido:', token); // Log para verificar que el token está llegando
-
+  console.log('Token recibido:', token); 
   if (!token) {
     return res.status(401).json({ msg: 'Token no proporcionado' });
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET); // Verificar si el token es válido y no ha caducado
-    req.user = decoded.user; // Decodificamos el usuario del token y lo adjuntamos a la solicitud
-    next(); // Continuamos con la solicitud
+    const decoded = jwt.verify(token, process.env.JWT_SECRET); 
+    req.user = decoded.user; 
+    next(); 
   } catch (error) {
     console.error('❌ Token inválido o caducado:', error);
     return res.status(401).json({ msg: 'Token inválido o caducado' });
@@ -143,5 +141,5 @@ module.exports = {
   login,
   getMe,
   updateAvatar,
-  verifyToken, // Añadimos la nueva función de verificación
+  verifyToken, 
 };
