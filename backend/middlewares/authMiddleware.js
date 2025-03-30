@@ -1,30 +1,22 @@
+// backend/middlewares/authMiddleware.js
+
 const jwt = require('jsonwebtoken');
-const { JWT_SECRET } = process.env;
+const User = require('../models/User');
 
-const protect = async (req, res, next) => {
-  let token;
-
-  // Verificar si la solicitud tiene un token en los encabezados
-  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-    token = req.headers.authorization.split(' ')[1];  // Obtener el token de los encabezados
-  }
+const authMiddleware = (req, res, next) => {
+  const token = req.header('Authorization')?.replace('Bearer ', '');  // Obtener el token de los encabezados
 
   if (!token) {
-    return res.status(401).json({ msg: 'Token no proporcionado' });
+    return res.status(401).json({ msg: 'No se proporcionó un token' });
   }
 
   try {
-    // Verificar y decodificar el token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);  // Usar JWT_SECRET del .env
-    const user = await User.findById(decoded.user.id).select('-password');  // Buscar al usuario por su id
-    if (!user) {
-      return res.status(401).json({ msg: 'No autorizado, usuario no encontrado' });
-    }
-
-    req.user = user;  // Añadir el usuario a la solicitud
-    next();  // Continuar con la solicitud
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);  // Verifica que el token es válido y no ha caducado
+    req.user = decoded.user;  // Decodifica la información del usuario y la adjunta a la solicitud
+    next();  // Continua con la solicitud
   } catch (error) {
-    return res.status(401).json({ msg: 'Token no válido' });
+    console.error('❌ Token inválido o caducado:', error);
+    return res.status(401).json({ msg: 'Token inválido o caducado' });
   }
 };
 
