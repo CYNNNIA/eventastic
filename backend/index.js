@@ -14,13 +14,13 @@ const app = express();
 // Configuración CORS para permitir solicitudes de localhost y Vercel
 const corsOptions = {
   origin: [
-    'http://localhost:3000', // Permitir localhost en desarrollo
-    'https://eventastic-two.vercel.app', // Permitir Vercel en producción
+    'http://localhost:3000',  // Permitir localhost en desarrollo
+    'https://eventastic-1.onrender.com',  // Permitir Vercel en producción
   ],
-  credentials: true, // Permitir cookies o encabezados de autorización
+  credentials: true,  // Permitir cookies o encabezados de autorización si se están usando
 };
-
 app.use(cors(corsOptions));
+
 
 app.use(express.json());
 
