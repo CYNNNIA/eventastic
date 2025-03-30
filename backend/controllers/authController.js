@@ -117,19 +117,18 @@ const updateAvatar = async (req, res) => {
   }
 };
 
-
+// Verificar si el token ha caducado
 const verifyToken = (req, res, next) => {
-  const token = req.header('Authorization')?.replace('Bearer ', ''); 
+  const token = req.header('Authorization')?.replace('Bearer ', '');
 
-  console.log('Token recibido:', token); 
   if (!token) {
     return res.status(401).json({ msg: 'Token no proporcionado' });
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET); 
-    req.user = decoded.user; 
-    next(); 
+    const decoded = jwt.verify(token, process.env.JWT_SECRET); // Verificar si el token es válido y no ha caducado
+    req.user = decoded.user; // Decodificamos el usuario del token y lo adjuntamos a la solicitud
+    next(); // Continuamos con la solicitud
   } catch (error) {
     console.error('❌ Token inválido o caducado:', error);
     return res.status(401).json({ msg: 'Token inválido o caducado' });
@@ -141,5 +140,5 @@ module.exports = {
   login,
   getMe,
   updateAvatar,
-  verifyToken, 
+  verifyToken, // Añadimos la nueva función de verificación
 };
