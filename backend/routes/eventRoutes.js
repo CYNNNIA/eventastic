@@ -1,71 +1,76 @@
 // backend/routes/eventRoutes.js
 
 const express = require('express');
-const authMiddleware = require('../middlewares/authMiddleware');  // Asegúrate de que la ruta sea correcta
+const authMiddleware = require('../middlewares/authMiddleware');
 const Event = require('../models/Event');
 const router = express.Router();
 
-// Ruta para crear un evento, requiere autenticación
+// Crear evento
 router.post('/create', authMiddleware, async (req, res) => {
   try {
     const event = new Event({
       ...req.body,
-      createdBy: req.user._id,  // Usando el usuario decodificado del token
+      createdBy: req.user._id,
     });
     await event.save();
-    res.status(201).send(event);  // Responde con el evento creado
+    res.status(201).json(event);
   } catch (error) {
-    res.status(400).send(error);  // Si ocurre un error, lo capturamos y respondemos
+    console.error('❌ Error al crear evento:', error.message);
+    res.status(400).json({ error: error.message });
   }
 });
 
-// Ruta para obtener todos los eventos
+// Obtener todos los eventos
 router.get('/', async (req, res) => {
   try {
-    const events = await Event.find();  // Encuentra todos los eventos en la base de datos
-    res.status(200).send(events);  // Responde con la lista de eventos
+    const events = await Event.find();
+    res.status(200).json(events);
   } catch (error) {
-    res.status(500).send(error);  // En caso de error en la consulta
+    console.error('❌ Error al obtener eventos:', error.message);
+    res.status(500).json({ error: 'No se pudieron obtener los eventos' });
   }
 });
 
-// Ruta para obtener los eventos creados por el usuario autenticado
+// Obtener eventos creados por el usuario
 router.get('/my-events', authMiddleware, async (req, res) => {
   try {
-    const events = await Event.find({ createdBy: req.user._id });  // Filtra los eventos creados por el usuario autenticado
-    res.status(200).send(events);  // Responde con los eventos encontrados
+    const events = await Event.find({ createdBy: req.user._id });
+    res.status(200).json(events);
   } catch (error) {
-    res.status(500).send(error);  // En caso de error en la consulta
+    console.error('❌ Error al obtener eventos del usuario:', error.message);
+    res.status(500).json({ error: 'No se pudieron obtener tus eventos' });
   }
 });
 
-// Ruta para unirse a un evento
+// Unirse a un evento
 router.post('/join/:eventId', authMiddleware, async (req, res) => {
   try {
-    const event = await Event.findById(req.params.eventId);  // Busca el evento por ID
+    const event = await Event.findById(req.params.eventId);
     if (!event) {
-      return res.status(404).send({ msg: 'Evento no encontrado' });  // Si no se encuentra el evento, responde con error
+      return res.status(404).json({ msg: 'Evento no encontrado' });
     }
 
     if (event.attendees.includes(req.user._id)) {
-      return res.status(400).send({ msg: 'Ya te has unido a este evento' });  // Verifica si el usuario ya está en el evento
+      return res.status(400).json({ msg: 'Ya te has unido a este evento' });
     }
 
-    event.attendees.push(req.user._id);  // Añade el ID del usuario al array de asistentes
-    await event.save();  // Guarda los cambios en la base de datos
-    res.status(200).send(event);  // Responde con el evento actualizado
+    event.attendees.push(req.user._id);
+    await event.save();
+    res.status(200).json(event);
   } catch (error) {
-    res.status(500).send(error);  // Si ocurre algún error
+    console.error('❌ Error al unirse a evento:', error.message);
+    res.status(500).json({ error: 'No se pudo unir al evento' });
   }
 });
 
-// Ruta para obtener los eventos a los que el usuario se ha unido
+// Obtener eventos unidos por el usuario
 router.get('/joined-events', authMiddleware, async (req, res) => {
   try {
-    const events = await Event.find({ attendees: req.user._id });  // Busca los eventos donde el usuario está en los asistentes
-    res.status(200).send(events);  // Responde con los eventos encontrados
+    const events = await Event.find({ attendees: req.user._id });
+    res.status(200).json(events);
   } catch (error) {
-    res.status(500).send(error);  // En caso de error en la consulta
+    console.error('❌ Error al obtener eventos unidos:', error.message);
+    res.status(500).json({ error: 'No se pudieron obtener los eventos' });
   }
 });
 
