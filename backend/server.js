@@ -42,7 +42,12 @@ app.get('/', (req, res) => {
   res.send('🚀 API de Eventastic corriendo correctamente...');
 });
 
-const PORT = process.env.PORT || 5001;
+if (!process.env.PORT) {
+  console.error('❌ PORT no definido en entorno');
+  process.exit(1);
+}
+
+const PORT = process.env.PORT;
 console.log(`Puerto en producción: ${PORT}`);
 
 app.listen(PORT, () => {
