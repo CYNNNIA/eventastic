@@ -34,6 +34,8 @@ app.get('/api/health', (req, res) => {
   res.status(mongoStatus.connected ? 200 : 500).json({
     status: 'ok',
     mongo: mongoStatus.status,
+    dbName: process.env.MONGO_DB_NAME || 'no definido',
+    environment: process.env.NODE_ENV || 'development',
     timestamp: new Date().toISOString()
   });
 });
