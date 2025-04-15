@@ -1,100 +1,59 @@
-// backend/scripts/importExcel.js
-const { MongoClient, ObjectId } = require('mongodb');
-const XLSX = require('xlsx');
-const path = require('path');
-const fs = require('fs');
-const axios = require('axios');
+// scripts/importExcel.js
 require('dotenv').config();
+const mongoose = require('mongoose');
+const xlsx = require('xlsx');
+const path = require('path');
+const Event = require('../models/Event');
 
-const uri = process.env.MONGO_URI;
-const dbName = process.env.MONGO_DB_NAME;
+const MONGO_URI = process.env.MONGO_URI;
+const MONGO_DB_NAME = process.env.MONGO_DB_NAME;
 
-const client = new MongoClient(uri);
-const workbook = XLSX.readFile(path.resolve(__dirname, '../eventastic_data.xlsx'));
-
-// 📂 uploads dir
-const uploadsDir = path.join(__dirname, '../uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
+if (!MONGO_URI || !MONGO_DB_NAME) {
+  console.error('❌ Faltan variables de entorno MONGO_URI o MONGO_DB_NAME');
+  process.exit(1);
 }
 
-async function downloadImage(url, filename) {
-  const filePath = path.join(uploadsDir, filename);
-  const writer = fs.createWriteStream(filePath);
+mongoose.set('strictQuery', true);
+mongoose.connect(MONGO_URI, {
+  dbName: MONGO_DB_NAME,
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => console.log('✅ Conectado a MongoDB'))
+.catch((err) => {
+  console.error('❌ Error al conectar a MongoDB:', err);
+  process.exit(1);
+});
 
-  const response = await axios({
-    url,
-    method: 'GET',
-    responseType: 'stream',
-  });
+const filePath = path.join(__dirname, '../eventastic_data.xlsx');
+const workbook = xlsx.readFile(filePath);
+const sheet = workbook.Sheets[workbook.SheetNames[0]];
+const data = xlsx.utils.sheet_to_json(sheet);
 
-  response.data.pipe(writer);
+console.log('📋 Datos crudos del Excel:', data);
 
-  return new Promise((resolve, reject) => {
-    writer.on('finish', () => resolve(`/uploads/${filename}`));
-    writer.on('error', reject);
-  });
-}
-
-async function run() {
+async function importEvents() {
   try {
-    await client.connect();
-    console.log('✅ Conectado a MongoDB');
+    await Event.deleteMany();
+    console.log('🧹 Colección de eventos limpiada');
 
-    const db = client.db(dbName);
-    const usersCollection = db.collection('users');
-    const eventsCollection = db.collection('events');
-    const reservationsCollection = db.collection('reservations');
+    const formattedEvents = data.map((item) => ({
+      title: item.title || item.Title || item.titulo,
+      description: item.description || item.Description || item.descripcion,
+      date: new Date(item.date || item.Date || item.fecha),
+      location: item.location || item.Location || item.ubicacion,
+      createdBy: new mongoose.Types.ObjectId(),
+      attendees: [],
+      image: item.image || ''
+    })).filter(event => event.title && event.description && !isNaN(event.date));
 
-    await usersCollection.deleteMany({});
-    await eventsCollection.deleteMany({});
-    await reservationsCollection.deleteMany({});
-    console.log('🧹 Colecciones limpiadas');
-
-    const usuarios = XLSX.utils.sheet_to_json(workbook.Sheets['Users']);
-    const eventos = XLSX.utils.sheet_to_json(workbook.Sheets['Events']);
-    const reservas = XLSX.utils.sheet_to_json(workbook.Sheets['Reservations']);
-
-    console.log('📥 Importando usuarios...');
-    const result = await usersCollection.insertMany(usuarios);
-    const userIds = result.insertedIds;
-    console.log(`📥 ${usuarios.length} usuarios importados`);
-
-    console.log('📥 Importando eventos...');
-    const formattedEvents = await Promise.all(
-      eventos.map(async (event, index) => {
-        const imageUrl = `https://picsum.photos/500/300?random=${index}`;
-        const filename = `event_${index}.jpg`;
-        const localImagePath = await downloadImage(imageUrl, filename);
-        const creatorIndex = index % Object.keys(userIds).length;
-
-        return {
-          title: event.title,
-          description: event.description,
-          date: new Date(event.date),
-          location: event.location,
-          createdBy: userIds[creatorIndex],
-          attendees: [],
-          image: localImagePath,
-          source: 'import',
-        };
-      })
-    );
-
-    await eventsCollection.insertMany(formattedEvents);
-    console.log(`📥 ${formattedEvents.length} eventos importados`);
-
-    if (reservas.length) {
-      await reservationsCollection.insertMany(reservas);
-      console.log(`📥 ${reservas.length} reservas importadas`);
-    }
-
-    console.log('✅ Importación completada');
+    await Event.insertMany(formattedEvents);
+    console.log(`✅ ${formattedEvents.length} eventos importados con éxito.`);
   } catch (err) {
-    console.error('❌ Error al importar:', err);
+    console.error('❌ Error al importar eventos:', err);
   } finally {
-    await client.close();
+    mongoose.connection.close();
   }
 }
 
-run();
+importEvents();

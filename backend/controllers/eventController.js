@@ -1,86 +1,121 @@
-const Event = require('../models/Event'); // Importa el modelo de evento
+const Event = require('../models/Event');
+const User = require('../models/User');
 
-// Crear un nuevo evento
 const createEvent = async (req, res) => {
   try {
     const { title, description, date, location } = req.body;
 
-    // Crea un nuevo evento
     const newEvent = new Event({
       title,
       description,
       date,
       location,
-      createdBy: req.user.id, // Suponiendo que estás usando autenticación y `req.user` tiene la información del usuario
+      createdBy: req.user.id,
     });
 
-    // Guarda el evento en la base de datos
     await newEvent.save();
-    res.status(201).json(newEvent); // Responde con el evento creado
+
+    await User.findByIdAndUpdate(req.user.id, {
+      $push: { createdEvents: newEvent._id },
+    });
+
+    res.status(201).json(newEvent);
   } catch (error) {
     console.error(error);
     res.status(500).json({ msg: 'Error al crear el evento' });
   }
 };
 
-// Obtener todos los eventos
 const getAllEvents = async (req, res) => {
   try {
-    const events = await Event.find(); // Obtén todos los eventos
-    res.status(200).json(events); // Responde con los eventos
+    const events = await Event.find();
+    res.status(200).json(events);
   } catch (error) {
     console.error(error);
     res.status(500).json({ msg: 'Error al obtener los eventos' });
   }
 };
 
-// Obtener un evento por ID
 const getEventById = async (req, res) => {
   try {
-    const event = await Event.findById(req.params.id); // Busca el evento por ID
+    const event = await Event.findById(req.params.id);
     if (!event) {
       return res.status(404).json({ msg: 'Evento no encontrado' });
     }
-    res.status(200).json(event); // Responde con el evento encontrado
+    res.status(200).json(event);
   } catch (error) {
     console.error(error);
     res.status(500).json({ msg: 'Error al obtener el evento' });
   }
 };
 
-// Actualizar un evento por ID
 const updateEvent = async (req, res) => {
   try {
-    const event = await Event.findByIdAndUpdate(
-      req.params.id, 
-      req.body, 
-      { new: true } // Devuelve el evento actualizado
-    );
-    
+    const event = await Event.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!event) {
       return res.status(404).json({ msg: 'Evento no encontrado' });
     }
-
-    res.status(200).json(event); // Responde con el evento actualizado
+    res.status(200).json(event);
   } catch (error) {
     console.error(error);
     res.status(500).json({ msg: 'Error al actualizar el evento' });
   }
 };
 
-// Eliminar un evento por ID
 const deleteEvent = async (req, res) => {
   try {
-    const event = await Event.findByIdAndDelete(req.params.id); // Elimina el evento por ID
-
+    const event = await Event.findByIdAndDelete(req.params.id);
     if (!event) {
       return res.status(404).json({ msg: 'Evento no encontrado' });
     }
-
-    res.status(200).json({ msg: 'Evento eliminado correctamente' }); // Responde que el evento ha sido eliminado
+    res.status(200).json({ msg: 'Evento eliminado correctamente' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ msg: 'Error al eliminar el evento' });
+  }
+};
+
+const joinEvent = async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id);
+    const user = await User.findById(req.user.id);
+
+    if (!event || !user) return res.status(404).json({ msg: 'Evento o usuario no encontrado' });
+
+    if (event.attendees.includes(user._id)) {
+      return res.status(400).json({ msg: 'Ya estás inscrito en este evento' });
+    }
+
+    event.attendees.push(user._id);
+    user.joinedEvents.push(event._id);
+
+    await event.save();
+    await user.save();
+
+    res.status(200).json({ msg: 'Te uniste al evento', event });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: 'Error al unirse al evento' });
+  }
+};
+
+const leaveEvent = async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id);
+    const user = await User.findById(req.user.id);
+
+    if (!event || !user) return res.status(404).json({ msg: 'Evento o usuario no encontrado' });
+
+    event.attendees.pull(user._id);
+    user.joinedEvents.pull(event._id);
+
+    await event.save();
+    await user.save();
+
+    res.status(200).json({ msg: 'Saliste del evento', event });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: 'Error al salir del evento' });
   }
 };
 
@@ -89,5 +124,7 @@ module.exports = {
   getAllEvents,
   getEventById,
   updateEvent,
-  deleteEvent
+  deleteEvent,
+  joinEvent,
+  leaveEvent
 };

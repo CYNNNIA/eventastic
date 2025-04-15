@@ -1,144 +1,95 @@
-const bcrypt = require('bcryptjs');
+// backend/controllers/authController.js
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const Event = require('../models/Event');
 
-// Registro de usuario
-const register = async (req, res) => {
-  const { name, email, password } = req.body;
+const JWT_SECRET = process.env.JWT_SECRET || 'default_secret';
 
-  if (!name || !email || !password) {
-    return res.status(400).json({ msg: 'Todos los campos son obligatorios' });
-  }
+const generateToken = (user) => {
+  return jwt.sign({ user: { id: user._id } }, JWT_SECRET, {
+    expiresIn: '7d',
+  });
+};
 
+exports.register = async (req, res) => {
   try {
-    let user = await User.findOne({ email });
-    if (user) {
-      return res.status(400).json({ msg: 'El email ya está registrado' });
-    }
+    const { name, email, password } = req.body;
+    const existing = await User.findOne({ email });
+    if (existing) return res.status(400).json({ msg: 'El email ya está registrado' });
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-    const avatarPath = req.file ? `/uploads/${req.file.filename}` : '/uploads/default-avatar.png';
+    const hashed = await bcrypt.hash(password, 10);
+    const user = await User.create({ name, email, password: hashed });
 
-    user = new User({
-      name,
-      email,
-      password: hashedPassword,
-      avatar: avatarPath
-    });
-
-    await user.save();
-
-    const payload = { user: { id: user.id } };
-    jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' }, (err, token) => {
-      if (err) throw err;
-      res.status(201).json({ token });
+    res.status(201).json({
+      token: generateToken(user),
+      user: { id: user._id, name: user.name, email: user.email, avatar: user.avatar },
     });
   } catch (err) {
-    console.error('Error en el registro:', err.message);
-    res.status(500).json({ msg: 'Error en el servidor' });
+    res.status(500).json({ msg: 'Error en el registro', error: err.message });
   }
 };
 
-// Inicio de sesión
-const login = async (req, res) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({ msg: 'Todos los campos son obligatorios' });
-  }
-
+exports.login = async (req, res) => {
   try {
-    let user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ msg: 'Usuario no encontrado' });
-    }
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).json({ msg: 'Credenciales inválidas' });
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ msg: 'Credenciales inválidas' });
-    }
-
-    const payload = { user: { id: user.id } };
-    jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' }, (err, token) => {
-      if (err) throw err;
-      res.status(200).json({ token });
-    });
-  } catch (err) {
-    console.error('Error en el inicio de sesión:', err.message);
-    res.status(500).json({ msg: 'Error en el servidor' });
-  }
-};
-
-
-const getMe = async (req, res) => {
-  try {
-    console.log('✅ Usuario autenticado:', req.user); // Confirma que req.user contiene los datos del usuario
-
-    if (!req.user) {
-      return res.status(401).json({ msg: 'No autorizado, usuario no encontrado' });
-    }
-
-    
-    const createdEvents = await Event.find({ createdBy: req.user.id });
-    const joinedEvents = await Event.find({ attendees: req.user.id });
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) return res.status(400).json({ msg: 'Credenciales inválidas' });
 
     res.status(200).json({
-      user: req.user, 
-      createdEvents,
-      joinedEvents,
+      token: generateToken(user),
+      user: { id: user._id, name: user.name, email: user.email, avatar: user.avatar },
     });
-  } catch (error) {
-    console.error('❌ Error al obtener perfil:', error);
-    res.status(500).json({ msg: 'Error en el servidor' });
-  }
-};
-
-// Actualizar avatar
-const updateAvatar = async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id);
-    if (!user) {
-      return res.status(404).json({ msg: 'Usuario no encontrado' });
-    }
-
-    if (!req.file) {
-      return res.status(400).json({ msg: 'No se subió ningún archivo' });
-    }
-
-    user.avatar = `/uploads/${req.file.filename}`;
-    await user.save();
-
-    res.status(200).json({ msg: 'Avatar actualizado con éxito', user });
   } catch (err) {
-    console.error('Error al actualizar el avatar:', err.message);
-    res.status(500).json({ msg: 'Error en el servidor' });
+    res.status(500).json({ msg: 'Error al iniciar sesión', error: err.message });
   }
 };
 
-// Verificar si el token ha caducado
-const verifyToken = (req, res, next) => {
-  const token = req.header('Authorization')?.replace('Bearer ', '');
-
-  if (!token) {
-    return res.status(401).json({ msg: 'Token no proporcionado' });
-  }
+exports.verifyToken = (req, res, next) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) return res.status(401).json({ msg: 'Token no proporcionado' });
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET); // Verificar si el token es válido y no ha caducado
-    req.user = decoded.user; // Decodificamos el usuario del token y lo adjuntamos a la solicitud
-    next(); // Continuamos con la solicitud
-  } catch (error) {
-    console.error('❌ Token inválido o caducado:', error);
-    return res.status(401).json({ msg: 'Token inválido o caducado' });
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = { _id: decoded.user.id }; // ✅ Aquí el fix
+    next();
+  } catch (err) {
+    res.status(403).json({ msg: 'Token inválido' });
   }
 };
 
-module.exports = {
-  register,
-  login,
-  getMe,
-  updateAvatar,
-  verifyToken, // Añadimos la nueva función de verificación
+exports.getMe = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id)
+      .populate('createdEvents')
+      .populate('joinedEvents');
+
+    if (!user) return res.status(404).json({ msg: 'Usuario no encontrado' });
+
+    res.status(200).json({
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar
+      },
+      createdEvents: user.createdEvents,
+      joinedEvents: user.joinedEvents
+    });
+  } catch (err) {
+    res.status(500).json({ msg: 'Error al obtener el perfil', error: err.message });
+  }
+};
+
+exports.updateAvatar = async (req, res) => {
+  try {
+    const { avatar } = req.body;
+    const user = await User.findByIdAndUpdate(req.user._id, { avatar }, { new: true });
+    res.status(200).json({ avatar: user.avatar });
+  } catch (err) {
+    res.status(500).json({ msg: 'Error al actualizar avatar', error: err.message });
+  }
 };
