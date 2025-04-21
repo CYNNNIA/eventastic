@@ -50,7 +50,7 @@ const CreateEvent = () => {
     dispatch({ type: 'SET_LOADING', value: true });
 
     try {
-      const { data } = await axiosInstance.post('/events', formData, {
+      await axiosInstance.post('/events', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`,
@@ -71,14 +71,12 @@ const CreateEvent = () => {
     <div className='create-event-page'>
       <div className='create-event-container'>
         <h1 className='create-event-title'>Crear Evento</h1>
-
         <form className='create-event-form' onSubmit={handleSubmit}>
           <input type='text' placeholder='Título' value={state.title} onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'title', value: e.target.value })} required />
-          <textarea placeholder='Descripción' rows='4' value={state.description} onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'description', value: e.target.value })} required></textarea>
+          <textarea placeholder='Descripción' rows='4' value={state.description} onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'description', value: e.target.value })} required />
           <input type='date' value={state.date} onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'date', value: e.target.value })} required />
           <input type='text' placeholder='Ubicación' value={state.location} onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'location', value: e.target.value })} required />
           <input type='file' accept='image/*' onChange={(e) => dispatch({ type: 'SET_IMAGE', value: e.target.files[0] })} />
-
           <button type='submit' className='create-event-button' disabled={state.loading}>
             {state.loading ? 'Creando...' : 'Crear Evento'}
           </button>
