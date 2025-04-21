@@ -2,20 +2,31 @@
 const jwt = require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET || 'default_secret';
 
-const authMiddleware = (req, res, next) => {
-  const authHeader = req.headers.authorization;
+const protect = async (req, res, next) => {
+  let token;
 
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ msg: 'Token no proporcionado' });
+  // Verificar si la solicitud tiene un token en los encabezados
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    token = req.headers.authorization.split(' ')[1];  // Obtener el token de los encabezados
+  }
+
+  if (!token) {
+    return res.status(401).json({ msg: 'No autorizado, token no encontrado' });
   }
 
   try {
-    const token = authHeader.split(' ')[1];
-    const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = { _id: decoded.user.id };
-    next();
-  } catch (err) {
-    res.status(403).json({ msg: 'Token inválido', error: err.message });
+    // Verificar y decodificar el token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);  // Usar JWT_SECRET del .env
+    const user = await User.findById(decoded.user.id).select('-password');  // Buscar al usuario por su id
+    if (!user) {
+      return res.status(401).json({ msg: 'No autorizado, usuario no encontrado' });
+    }
+
+    req.user = user;  // Añadir el usuario a la solicitud
+    next();  // Continuar con la solicitud
+  } catch (error) {
+    console.error('Error en autenticación:', error);
+    res.status(500).json({ msg: 'Error en la autenticación' });
   }
 };
 
