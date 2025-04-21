@@ -1,17 +1,19 @@
 const express = require('express');
-const { register, login, getMe, updateAvatar, verifyToken } = require('../controllers/authController');
 const router = express.Router();
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
 
-// Ruta para obtener el perfil del usuario (requiere token)
-router.get('/me', verifyToken, getMe);  // Aquí usamos verifyToken para proteger la ruta
+const {
+  register,
+  login,
+  getMe,
+  updateAvatar,
+  verifyToken
+} = require('../controllers/authController');
 
-// Ruta para registrar un nuevo usuario
-router.post('/register', register);
-
-// Ruta para login de usuario
+router.post('/register', upload.single('avatar'), register);
 router.post('/login', login);
-
-// Ruta para actualizar el avatar del usuario (requiere token)
+router.get('/me', verifyToken, getMe);
 router.post('/avatar', verifyToken, updateAvatar);
 
 module.exports = router;

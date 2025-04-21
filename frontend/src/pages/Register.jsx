@@ -1,34 +1,47 @@
-import React, { useState } from 'react'
-import axios from 'axios'
-import { useNavigate } from 'react-router-dom'
-import '../styles/Register.css'
-import '../styles/spinner.css'
+import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import '../styles/Register.css';
+import '../styles/spinner.css';
 
 const Register = () => {
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [avatar, setAvatar] = useState(null)
-  const [error, setError] = useState(null)
-  const [loading, setLoading] = useState(false) // Estado para el spinner
-  const navigate = useNavigate()
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [avatar, setAvatar] = useState(null);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleFileChange = (e) => {
-    setAvatar(e.target.files[0])
-  }
+    setAvatar(e.target.files[0]);
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
+    setError(null);
 
-    const formData = new FormData()
-    formData.append('name', name)
-    formData.append('email', email)
-    formData.append('password', password)
-    if (avatar) {
-      formData.append('avatar', avatar)
+    if (!name || !email || !password) {
+      setError('⚠️ Todos los campos son obligatorios.');
+      return;
     }
 
-    setLoading(true) // Mostrar el spinner cuando se envía el formulario
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('email', email);
+    formData.append('password', password);
+    if (avatar) {
+      formData.append('avatar', avatar);
+    }
+
+    console.log('📤 Enviando datos:', {
+      name,
+      email,
+      password: '***', // oculta contraseña por seguridad
+      avatar,
+    });
+
+    setLoading(true);
 
     try {
       const { data } = await axios.post(
@@ -36,27 +49,27 @@ const Register = () => {
         formData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data'
-          }
+            'Content-Type': 'multipart/form-data',
+          },
         }
-      )
+      );
 
-      localStorage.setItem('token', data.token)
-      alert('Registro exitoso')
-      navigate('/events') // Redirige al usuario a la página de eventos
+      localStorage.setItem('token', data.token);
+      alert('✅ Registro exitoso');
+      navigate('/events');
     } catch (err) {
-      console.error(err.response?.data || err.message)
-      const backendMessage = err.response?.data?.message
+      console.error('❌ Error al registrarse:', err.response?.data || err.message);
+      const backendMessage = err.response?.data?.message || err.response?.data?.msg;
 
       if (backendMessage === 'Email already registered') {
-        setError('El correo electrónico ya está registrado. Intenta con otro.')
+        setError('El correo electrónico ya está registrado. Intenta con otro.');
       } else {
-        setError(backendMessage || 'Error al registrarse. Inténtalo de nuevo.')
+        setError(backendMessage || 'Error al registrarse. Intenta de nuevo.');
       }
     } finally {
-      setLoading(false) // Ocultar el spinner después de la respuesta
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className='register-container'>
@@ -99,16 +112,12 @@ const Register = () => {
           />
         </div>
         <button type='submit'>
-          {loading ? (
-            <div className='spinner'></div> 
-          ) : (
-            'Registrarse'
-          )}
+          {loading ? <div className='spinner'></div> : 'Registrarse'}
         </button>
         {error && <p className='error-message'>{error}</p>}
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default Register
+export default Register;

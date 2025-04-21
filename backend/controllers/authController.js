@@ -1,66 +1,92 @@
-// backend/controllers/authController.js
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const Event = require('../models/Event');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'default_secret';
+const JWT_SECRET = process.env.JWT_SECRET || 'supersecreto';
 
+// ✅ Generar token JWT
 const generateToken = (user) => {
   return jwt.sign({ user: { id: user._id } }, JWT_SECRET, {
     expiresIn: '7d',
   });
 };
 
+// ✅ REGISTRO con subida de avatar
 exports.register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
-    const existing = await User.findOne({ email });
-    if (existing) return res.status(400).json({ msg: 'El email ya está registrado' });
+    const avatar = req.file?.path; // Ruta del archivo subido (si se subió avatar)
 
-    const hashed = await bcrypt.hash(password, 10);
-    const user = await User.create({ name, email, password: hashed });
+    // Validación
+    if (!name || !email || !password) {
+      return res.status(400).json({ msg: 'Todos los campos son obligatorios' });
+    }
 
-    res.status(201).json({
-      token: generateToken(user),
-      user: { id: user._id, name: user.name, email: user.email, avatar: user.avatar },
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ msg: 'El email ya está registrado' });
+    }
+
+    // Encriptar contraseña
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Crear usuario
+    const newUser = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+      avatar,
+    });
+
+    // Devolver token y datos del usuario
+    return res.status(201).json({
+      token: generateToken(newUser),
+      user: {
+        id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+        avatar: newUser.avatar,
+      },
     });
   } catch (err) {
+    console.error('❌ Error en el registro:', err);
     res.status(500).json({ msg: 'Error en el registro', error: err.message });
   }
 };
 
+// ✅ LOGIN
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
+
+    // Validación básica
+    if (!email || !password) {
+      return res.status(400).json({ msg: 'Email y contraseña son obligatorios' });
+    }
+
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ msg: 'Credenciales inválidas' });
 
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) return res.status(400).json({ msg: 'Credenciales inválidas' });
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(400).json({ msg: 'Credenciales inválidas' });
 
     res.status(200).json({
       token: generateToken(user),
-      user: { id: user._id, name: user.name, email: user.email, avatar: user.avatar },
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar,
+      },
     });
   } catch (err) {
+    console.error('❌ Error al iniciar sesión:', err);
     res.status(500).json({ msg: 'Error al iniciar sesión', error: err.message });
   }
 };
 
-exports.verifyToken = (req, res, next) => {
-  const token = req.headers.authorization?.split(' ')[1];
-  if (!token) return res.status(401).json({ msg: 'Token no proporcionado' });
-
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = { _id: decoded.user.id }; // ✅ Aquí el fix
-    next();
-  } catch (err) {
-    res.status(403).json({ msg: 'Token inválido' });
-  }
-};
-
+// ✅ PERFIL (requiere autenticación)
 exports.getMe = async (req, res) => {
   try {
     const user = await User.findById(req.user._id)
@@ -74,38 +100,50 @@ exports.getMe = async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
-        avatar: user.avatar
+        avatar: user.avatar,
       },
       createdEvents: user.createdEvents,
-      joinedEvents: user.joinedEvents
+      joinedEvents: user.joinedEvents,
     });
   } catch (err) {
-    res.status(500).json({ msg: 'Error al obtener el perfil', error: err.message });
+    res.status(500).json({ msg: 'Error al obtener perfil', error: err.message });
   }
 };
 
-// Verificar si el token ha caducado
-const verifyToken = (req, res, next) => {
-  const token = req.header('Authorization')?.replace('Bearer ', '');
+// ✅ Verificar token JWT como middleware
+exports.verifyToken = (req, res, next) => {
+  const token = req.headers.authorization?.split(' ')[1]; // Bearer <token>
 
-  if (!token) {
-    return res.status(401).json({ msg: 'Token no proporcionado' });
-  }
+  if (!token) return res.status(401).json({ msg: 'Token no proporcionado' });
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET); // Verificar si el token es válido y no ha caducado
-    req.user = decoded.user; // Decodificamos el usuario del token y lo adjuntamos a la solicitud
-    next(); // Continuamos con la solicitud
-  } catch (error) {
-    console.error('❌ Token inválido o caducado:', error);
-    return res.status(401).json({ msg: 'Token inválido o caducado' });
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = { _id: decoded.user.id };
+    next();
+  } catch (err) {
+    console.error('❌ Token inválido:', err);
+    res.status(403).json({ msg: 'Token inválido o caducado' });
   }
 };
 
-module.exports = {
-  register,
-  login,
-  getMe,
-  updateAvatar,
-  verifyToken, // Añadimos la nueva función de verificación
+// (Opcional) actualizar avatar si lo usas
+exports.updateAvatar = async (req, res) => {
+  try {
+    const avatar = req.file?.path;
+    if (!avatar) return res.status(400).json({ msg: 'No se proporcionó imagen' });
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      { avatar },
+      { new: true }
+    );
+
+    res.status(200).json({
+      msg: 'Avatar actualizado',
+      avatar: updatedUser.avatar,
+    });
+  } catch (err) {
+    console.error('❌ Error al actualizar avatar:', err);
+    res.status(500).json({ msg: 'Error al actualizar avatar', error: err.message });
+  }
 };
