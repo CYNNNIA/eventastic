@@ -20,8 +20,8 @@ const app = express();
 const corsOptions = {
   origin: [
     'http://localhost:3000',
-    'https://eventastic-1.onrenderhttps://eventastic-api.onrender.com',
-    'https://eventastic.vercel.app' // ✅ Añade tu frontend en Vercel si lo usas
+    'https://eventastic-api.onrender.com',     // 🟢 tu API backend en Render
+    'https://eventastic-8qow.vercel.app'
   ],
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization'],
