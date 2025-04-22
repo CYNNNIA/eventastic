@@ -7,28 +7,39 @@ const { connectDB, mongoHealthCheck } = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 
+// 📦 Configuración de variables de entorno
 dotenv.config();
+
+// 🔌 Conectar a la base de datos
 connectDB();
 
+// 🚀 Crear la app de Express
 const app = express();
 
+// 🌍 CORS
 const corsOptions = {
   origin: [
     'http://localhost:3000',
-    'https://eventastic-1.onrender.com'
+    'https://eventastic-1.onrenderhttps://eventastic-api.onrender.com',
+    'https://eventastic.vercel.app' // ✅ Añade tu frontend en Vercel si lo usas
   ],
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization'],
   methods: ['GET', 'POST', 'PUT', 'DELETE']
 };
-
 app.use(cors(corsOptions));
+
+// 🧠 Middleware para leer JSON
 app.use(express.json());
+
+// 📁 Servir imágenes subidas (avatares, banners, etc.)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// 🛣️ Rutas principales
 app.use('/api/auth', authRoutes);
 app.use('/api/events', eventRoutes);
 
+// ❤️ Health Check (opcional pero útil para Render)
 app.get('/api/health', (req, res) => {
   const mongoStatus = mongoHealthCheck();
   res.status(mongoStatus.connected ? 200 : 500).json({
@@ -40,18 +51,15 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// 🏠 Ruta base
 app.get('/', (req, res) => {
   res.send('🚀 API de Eventastic corriendo correctamente...');
 });
 
-if (!process.env.PORT) {
-  console.error('❌ PORT no definido en entorno');
-  process.exit(1);
-}
+// 🌐 Puerto
+const PORT = process.env.PORT || 5001;
 
-const PORT = process.env.PORT;
-console.log(`Puerto en producción: ${PORT}`);
-
+// 🟢 Levantar servidor
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en el puerto ${PORT}`);
 });
