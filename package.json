@@ -1,8 +1,7 @@
 {
-  "scripts": {
-    "start": "cd backend && npm run start",
-    "dev": "cd backend && npm run dev"
-  },
+"scripts": {
+  "start": "npm install --prefix backend && npm start --prefix backend"
+},
   "dependencies": {
     "dotenv": "^16.4.7",
     "jwt-decode": "^4.0.0",
