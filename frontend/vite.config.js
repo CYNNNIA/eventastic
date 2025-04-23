@@ -7,9 +7,17 @@ export default defineConfig({
     outDir: 'dist',
     rollupOptions: {
       external: [
-        'fs', 'path', 'url', 'crypto', 'stream',
-        'events', 'util', 'module', 'tty', 'perf_hooks',
-        'fsevents' // <- ¡añade esto aquí!
+        'fs',
+        'path',
+        'url',
+        'crypto',
+        'stream',
+        'events',
+        'util',
+        'module',
+        'tty',
+        'perf_hooks',
+        'fsevents' // AÑADE ESTE AQUÍ
       ]
     }
   }
