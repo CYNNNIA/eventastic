@@ -8,7 +8,8 @@ export default defineConfig({
     rollupOptions: {
       external: [
         'fs', 'path', 'url', 'crypto', 'stream',
-        'events', 'util', 'module', 'tty', 'perf_hooks'
+        'events', 'util', 'module', 'tty', 'perf_hooks',
+        'fsevents' // <- ¡añade esto aquí!
       ]
     }
   }
